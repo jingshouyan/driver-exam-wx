@@ -1,6 +1,5 @@
 const api = require('../../utils/api')
 const storage = require('../../utils/storage')
-const voice = require('../../utils/voice')
 
 Page({
   data: {
@@ -10,8 +9,7 @@ Page({
     answered: false,
     selectedOption: '',
     isCorrect: false,
-    voiceEnabled: true,
-    asrActive: false,
+
     isComplete: false,
     correctCount: 0,
     correctRate: 0,
@@ -21,12 +19,6 @@ Page({
     const subject = parseInt(options.subject || 1)
     this.setData({ subject })
     this.loadQuestions(subject)
-    voice.initASR(this.onASRResult)
-  },
-
-  onUnload() {
-    voice.stopTTS()
-    voice.stopASR()
   },
 
   /** 加载题目 */
@@ -37,9 +29,6 @@ Page({
         const questions = (data.questions || []).map(q => ({ ...q, marked: false }))
         this.setData({ questions })
         wx.hideLoading()
-        if (questions.length > 0) {
-          this.autoPlayVoice()
-        }
       })
       .catch(err => {
         wx.hideLoading()
@@ -78,7 +67,6 @@ Page({
 
   /** 检查答案 */
   checkAnswer(option) {
-    voice.stopASR()
     const question = this.data.questions[this.data.currentIndex]
     const isCorrect = option.toUpperCase() === question.answer.toUpperCase()
 
@@ -106,7 +94,6 @@ Page({
       selectedOption: '',
       isCorrect: false,
     })
-    this.autoPlayVoice()
   },
 
   /** 完成练习 */
@@ -134,46 +121,6 @@ Page({
     q.marked = !q.marked
     storage.toggleMark(q.id)
     this.setData({ questions: this.data.questions })
-  },
-
-  /** 切换语音 */
-  toggleVoice() {
-    const enabled = !this.data.voiceEnabled
-    this.setData({ voiceEnabled: enabled })
-    if (enabled) {
-      this.autoPlayVoice()
-    } else {
-      voice.stopTTS()
-      voice.stopASR()
-    }
-  },
-
-  /** 自动播报语音 */
-  autoPlayVoice() {
-    if (!this.data.voiceEnabled) return
-    const q = this.data.questions[this.data.currentIndex]
-    if (!q) return
-
-    const text = q.question
-    voice.playText(text, () => {
-      // 读题结束后启动 ASR
-      this.setData({ asrActive: true })
-      voice.startASR()
-    }).catch(err => {
-      console.error('TTS error:', err)
-    })
-  },
-
-  /** ASR 识别结果 */
-  onASRResult(text) {
-    this.setData({ asrActive: false })
-    if (this.data.answered) return
-
-    // 匹配 A/B/C/D
-    const match = text.match(/[ABCD]/)
-    if (match) {
-      this.checkAnswer(match[0])
-    }
   },
 
   /** 返回首页 */

@@ -2,9 +2,6 @@
   <!-- 顶部信息栏 -->
   <view class="top-bar">
     <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
-    <view class="voice-toggle" bindtap="toggleVoice">
-      <text>{{voiceEnabled ? '🔊 语音开' : '🔇 语音关'}}</text>
-    </view>
   </view>
 
   <!-- 加载中 -->
@@ -77,8 +74,4 @@
     <view class="action-btn primary" bindtap="goHome">返回首页</view>
   </view>
 
-  <!-- ASR 状态指示 -->
-  <view class="asr-indicator {{asrActive ? 'listening' : ''}}" wx:if="{{voiceEnabled && !answered}}">
-    <text>{{asrActive ? '🎤 正在听...' : ''}}</text>
-  </view>
 </view>

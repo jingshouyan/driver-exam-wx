@@ -21,14 +21,6 @@
   color: #666;
 }
 
-.voice-toggle {
-  font-size: 14px;
-  color: #07c160;
-  padding: 4px 12px;
-  border-radius: 16px;
-  border: 1px solid #07c160;
-}
-
 /* 加载 */
 .loading {
   text-align: center;
@@ -242,24 +234,3 @@
   color: #07c160;
 }
 
-/* ASR 指示器 */
-.asr-indicator {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 8px 20px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  border-radius: 20px;
-  font-size: 14px;
-}
-
-.asr-indicator.listening {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}

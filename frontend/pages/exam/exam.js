@@ -1,6 +1,5 @@
 const api = require('../../utils/api')
 const storage = require('../../utils/storage')
-const voice = require('../../utils/voice')
 
 Page({
   data: {
@@ -9,8 +8,7 @@ Page({
     currentIndex: 0,
     selectedOption: '',
     answers: [],
-    voiceEnabled: true,
-    asrActive: false,
+
     submitted: false,
     score: 0,
     correctCount: 0,
@@ -22,12 +20,6 @@ Page({
     const subject = parseInt(options.subject || 1)
     this.setData({ subject })
     this.loadQuestions(subject)
-    voice.initASR(this.onASRResult)
-  },
-
-  onUnload() {
-    voice.stopTTS()
-    voice.stopASR()
   },
 
   /** 加载题目 */
@@ -41,9 +33,6 @@ Page({
           answers: new Array(questions.length).fill(''),
         })
         wx.hideLoading()
-        if (questions.length > 0) {
-          this.autoPlayVoice()
-        }
       })
       .catch(err => {
         wx.hideLoading()
@@ -90,13 +79,10 @@ Page({
       currentIndex: nextIndex,
       selectedOption: this.data.answers[nextIndex] || '',
     })
-    this.autoPlayVoice()
   },
 
   /** 交卷 */
   submitExam() {
-    voice.stopTTS()
-    voice.stopASR()
 
     let correctCount = 0
     const wrongList = []
@@ -138,42 +124,6 @@ Page({
       currentIndex: idx,
       selectedOption: this.data.answers[idx] || '',
     })
-  },
-
-  /** 切换语音 */
-  toggleVoice() {
-    const enabled = !this.data.voiceEnabled
-    this.setData({ voiceEnabled: enabled })
-    if (enabled) {
-      this.autoPlayVoice()
-    } else {
-      voice.stopTTS()
-      voice.stopASR()
-    }
-  },
-
-  /** 自动播报 */
-  autoPlayVoice() {
-    if (!this.data.voiceEnabled || this.data.submitted) return
-    const q = this.data.questions[this.data.currentIndex]
-    if (!q) return
-
-    voice.playText(q.question, () => {
-      this.setData({ asrActive: true })
-      voice.startASR()
-    }).catch(err => {
-      console.error('TTS error:', err)
-    })
-  },
-
-  /** ASR 结果 */
-  onASRResult(text) {
-    this.setData({ asrActive: false })
-    if (this.data.submitted) return
-    const match = text.match(/[ABCD]/)
-    if (match) {
-      this.selectOption({ currentTarget: { dataset: { option: match[0] } } })
-    }
   },
 
   goHome() {

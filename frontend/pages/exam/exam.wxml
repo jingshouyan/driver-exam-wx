@@ -3,9 +3,6 @@
   <view class="top-bar">
     <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
     <text class="exam-badge">模拟考试</text>
-    <view class="voice-toggle" bindtap="toggleVoice">
-      <text>{{voiceEnabled ? '🔊 语音开' : '🔇 语音关'}}</text>
-    </view>
   </view>
 
   <!-- 加载 -->
@@ -87,8 +84,4 @@
     <view class="action-btn primary" bindtap="goHome">返回首页</view>
   </view>
 
-  <!-- ASR 指示 -->
-  <view class="asr-indicator {{asrActive ? 'listening' : ''}}" wx:if="{{voiceEnabled && !submitted}}">
-    <text>{{asrActive ? '🎤 正在听...' : ''}}</text>
-  </view>
 </view>

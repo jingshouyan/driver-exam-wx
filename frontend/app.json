@@ -11,11 +11,5 @@
     "navigationBarTextStyle": "white",
     "backgroundColor": "#f5f5f5"
   },
-  "plugins": {
-    "WechatSI": {
-      "version": "0.3.7",
-      "provider": "wx069ba97219f66d99"
-    }
-  },
   "sitemapLocation": "sitemap.json"
 }
