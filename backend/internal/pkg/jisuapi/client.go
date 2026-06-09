@@ -41,7 +41,7 @@ type QueryResponse struct {
 		Total    int            `json:"total"`
 		PageNum  int            `json:"pagenum"`
 		PageSize int            `json:"pagesize"`
-		Subject  string         `json:"subject"`
+		Subject  int            `json:"subject"`
 		Type     string         `json:"type"`
 		Sort     string         `json:"sort"`
 		List     []QuestionItem `json:"list"`
