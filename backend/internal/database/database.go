@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"log/slog"
+	"time"
 
 	"driver-exam-wx/config"
 	"driver-exam-wx/internal/model"
@@ -31,8 +32,17 @@ func Init(cfg *config.Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("不支持的数据库驱动: %s（可选: mysql, sqlite）", cfg.Database.Driver)
 	}
 
+	gormLogger := logger.New(
+		slog.NewLogLogger(slog.Default().Handler(), slog.LevelInfo),
+		logger.Config{
+			SlowThreshold: 200 * time.Millisecond,
+			LogLevel:      logger.Info,
+			Colorful:      false,
+		},
+	)
+
 	db, err := gorm.Open(dialector, &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: gormLogger,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("open db: %w", err)
