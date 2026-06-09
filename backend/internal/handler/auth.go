@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"log"
 	"net/http"
+	"strings"
 
 	"driver-exam-wx/internal/service"
 
@@ -29,17 +31,19 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// TODO: 调用微信 Code2Session 换取 openid
-	// openID, err := h.svc.Code2Session(c.Request.Context(), req.Code)
-	// if err != nil { ... }
+	token, openID, err := h.svc.Login(c.Request.Context(), req.Code)
+	if err != nil {
+		log.Printf("login failed: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "登录失败"})
+		return
+	}
 
-	// 占位：直接返回
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "ok",
 		"data": gin.H{
-			"token":   "placeholder_token",
-			"open_id": "placeholder_openid",
+			"token":   token,
+			"open_id": openID,
 		},
 	})
 }
@@ -47,6 +51,27 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // RefreshToken 刷新 token
 // POST /api/v1/auth/refresh
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
-	// TODO: 从请求头或 body 获取旧 token，刷新
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "ok"})
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"code": 401, "msg": "缺少 token"})
+		return
+	}
+
+	parts := strings.SplitN(authHeader, " ", 2)
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		c.JSON(http.StatusUnauthorized, gin.H{"code": 401, "msg": "token 格式错误"})
+		return
+	}
+
+	newToken, err := h.svc.RefreshToken(parts[1])
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"code": 401, "msg": "token 无效或已过期"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"msg":  "ok",
+		"data": gin.H{"token": newToken},
+	})
 }

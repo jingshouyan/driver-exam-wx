@@ -2,22 +2,30 @@ package service
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"driver-exam-wx/config"
+	"driver-exam-wx/internal/model"
+	"driver-exam-wx/internal/pkg/wechat"
 
 	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/gorm"
 )
 
 type AuthService struct {
-	cfg     *config.WeChatConfig
+	cfg       *config.WeChatConfig
 	jwtSecret []byte
+	wxClient  *wechat.Client
+	db        *gorm.DB
 }
 
-func NewAuthService(cfg *config.WeChatConfig) *AuthService {
+func NewAuthService(cfg *config.WeChatConfig, db *gorm.DB) *AuthService {
 	return &AuthService{
 		cfg:       cfg,
-		jwtSecret: []byte(cfg.Secret), // 使用 wechat secret 作为 JWT 密钥
+		jwtSecret: []byte(cfg.Secret),
+		wxClient:  wechat.NewClient(cfg.AppID, cfg.Secret),
+		db:        db,
 	}
 }
 
@@ -63,9 +71,56 @@ func (s *AuthService) RefreshToken(tokenStr string) (string, error) {
 	return s.GenerateToken(openID)
 }
 
-// Code2Session 调用微信接口换取 openid（占位）
-func (s *AuthService) Code2Session(ctx context.Context, code string) (string, error) {
-	// TODO: 调用 https://api.weixin.qq.com/sns/jscode2session
-	// 返回 openid
-	return "", nil
+// Login 微信登录：code → openid → 自动创建用户 → 返回 token
+func (s *AuthService) Login(ctx context.Context, code string) (token string, openID string, err error) {
+	// 1. 微信 Code2Session 换取 openid
+	resp, err := s.wxClient.Code2Session(ctx, code)
+	if err != nil {
+		return "", "", err
+	}
+
+	// 2. 查找或创建用户
+	user, err := s.findOrCreateUser(resp.OpenID)
+	if err != nil {
+		return "", "", err
+	}
+
+	// 3. 生成 JWT
+	token, err = s.GenerateToken(user.OpenID)
+	if err != nil {
+		return "", "", err
+	}
+
+	return token, user.OpenID, nil
+}
+
+// findOrCreateUser 查找用户，不存在则自动创建
+func (s *AuthService) findOrCreateUser(openID string) (*model.User, error) {
+	var user model.User
+	err := s.db.Where("openid = ?", openID).First(&user).Error
+	if err == nil {
+		return &user, nil
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	// 自动创建新用户
+	user = model.User{OpenID: openID}
+	if err := s.db.Create(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// GetUser 按 openid 获取用户信息
+func (s *AuthService) GetUser(openID string) (*model.User, error) {
+	var user model.User
+	err := s.db.Where("openid = ?", openID).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

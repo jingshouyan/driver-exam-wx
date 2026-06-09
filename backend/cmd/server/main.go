@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Service
-	authSvc := service.NewAuthService(&cfg.WeChat)
+	authSvc := service.NewAuthService(&cfg.WeChat, db)
 	questionSvc := service.NewQuestionService(db)
 	syncSvc := service.NewSyncService(db, &cfg.JisuAPI)
 
@@ -37,8 +37,22 @@ func main() {
 	questionHandler := handler.NewQuestionHandler(questionSvc)
 	authMiddleware := middleware.NewAuthMiddleware(authSvc)
 
-	// 启动同步（TODO: 实现）
-	_ = syncSvc
+	// 启动同步（检查间隔）
+	if cfg.Sync.OnStartup {
+		shouldSync, err := syncSvc.ShouldSync(cfg.Sync.MinIntervalHours)
+		if err != nil {
+			log.Printf("检查同步间隔失败: %v", err)
+		} else if shouldSync {
+			log.Println("开始数据同步...")
+			if err := syncSvc.SyncWithRetry(&cfg.Sync); err != nil {
+				log.Printf("数据同步失败: %v", err)
+			} else {
+				log.Println("数据同步完成")
+			}
+		} else {
+			log.Printf("距上次同步不足 %d 小时，跳过本次启动同步", cfg.Sync.MinIntervalHours)
+		}
+	}
 
 	// Router
 	r := router.Setup(authHandler, questionHandler, authMiddleware)

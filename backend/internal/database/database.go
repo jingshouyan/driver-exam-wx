@@ -32,6 +32,7 @@ func Init(cfg *config.MySQLConfig) (*gorm.DB, error) {
 	if err := db.AutoMigrate(
 		&model.User{},
 		&model.Question{},
+		&model.SyncRecord{},
 	); err != nil {
 		return nil, fmt.Errorf("auto migrate: %w", err)
 	}
