@@ -24,6 +24,9 @@ profile.cov
 go.work
 go.work.sum
 
+# Log files
+logs/
+
 # SQLite database files
 *.db
 *.db-journal
@@ -36,3 +39,5 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+/logs/  # 日志文件夹

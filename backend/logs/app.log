@@ -1,6 +1,0 @@
-time=2026-06-09T13:56:10.930+08:00 level=INFO msg=日志已初始化 file=logs/app.log
-time=2026-06-09T13:56:10.940+08:00 level=INFO msg="使用 SQLite 数据库" path=data/driver_exam.db
-time=2026-06-09T13:56:10.944+08:00 level=INFO msg=数据库迁移完成
-time=2026-06-09T13:56:10.944+08:00 level=INFO msg=距上次同步不足指定小时，跳过本次启动同步 min_interval_hours=24
-time=2026-06-09T13:56:10.944+08:00 level=INFO msg=定时同步已注册 cron="0 3 * * *"
-time=2026-06-09T13:56:10.944+08:00 level=INFO msg=服务启动 addr=:8080
