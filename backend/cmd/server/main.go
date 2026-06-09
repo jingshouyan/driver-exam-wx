@@ -11,6 +11,8 @@ import (
 	"driver-exam-wx/internal/middleware"
 	"driver-exam-wx/internal/router"
 	"driver-exam-wx/internal/service"
+
+	"github.com/robfig/cron/v3"
 )
 
 func main() {
@@ -53,6 +55,22 @@ func main() {
 			log.Printf("距上次同步不足 %d 小时，跳过本次启动同步", cfg.Sync.MinIntervalHours)
 		}
 	}
+
+	// 定时同步（cron）
+	c := cron.New()
+	_, err = c.AddFunc(cfg.Sync.Cron, func() {
+		log.Println("定时同步触发")
+		if err := syncSvc.SyncWithRetry(&cfg.Sync); err != nil {
+			log.Printf("定时同步失败: %v", err)
+		} else {
+			log.Println("定时同步完成")
+		}
+	})
+	if err != nil {
+		log.Fatalf("注册定时同步失败: %v", err)
+	}
+	c.Start()
+	log.Printf("定时同步已注册，cron: %s", cfg.Sync.Cron)
 
 	// Router
 	r := router.Setup(authHandler, questionHandler, authMiddleware)
