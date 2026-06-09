@@ -18,7 +18,11 @@ type Config struct {
 }
 
 type LogConfig struct {
-	File string `mapstructure:"file"` // 日志文件路径，为空则输出到 stdout
+	File       string `mapstructure:"file"`       // 日志文件路径，为空则输出到 stdout
+	MaxSize    int    `mapstructure:"max_size"`    // 单个日志文件最大大小（MB）
+	MaxBackups int    `mapstructure:"max_backups"` // 保留的旧日志文件数
+	MaxAge     int    `mapstructure:"max_age"`     // 保留旧日志文件的最大天数
+	Compress   bool   `mapstructure:"compress"`    // 是否压缩旧日志文件
 }
 
 type ServerConfig struct {

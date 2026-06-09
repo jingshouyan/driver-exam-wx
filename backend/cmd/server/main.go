@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -16,6 +17,7 @@ import (
 	"driver-exam-wx/internal/service"
 
 	"github.com/robfig/cron/v3"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func main() {
@@ -27,25 +29,13 @@ func main() {
 		log.Fatalf("加载配置失败: %v", err)
 	}
 
-	// 日志文件
-	if cfg.Log.File != "" {
-		dir := filepath.Dir(cfg.Log.File)
-		if dir != "." {
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				log.Fatalf("创建日志目录失败: %v", err)
-			}
-		}
-		f, err := os.OpenFile(cfg.Log.File, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-		if err != nil {
-			log.Fatalf("打开日志文件失败: %v", err)
-		}
-		log.SetOutput(io.MultiWriter(os.Stdout, f))
-		log.Printf("日志已写入: %s", cfg.Log.File)
-	}
+	// 日志：slog + lumberjack
+	setupLog(&cfg.Log)
 
 	db, err := database.Init(cfg)
 	if err != nil {
-		log.Fatalf("数据库初始化失败: %v", err)
+		slog.Error("数据库初始化失败", "error", err)
+		os.Exit(1)
 	}
 
 	// Service
@@ -62,41 +52,77 @@ func main() {
 	if cfg.Sync.OnStartup {
 		shouldSync, err := syncSvc.ShouldSync(cfg.Sync.MinIntervalHours)
 		if err != nil {
-			log.Printf("检查同步间隔失败: %v", err)
+			slog.Error("检查同步间隔失败", "error", err)
 		} else if shouldSync {
-			log.Println("开始数据同步...")
+			slog.Info("开始数据同步...")
 			if err := syncSvc.SyncWithRetry(&cfg.Sync); err != nil {
-				log.Printf("数据同步失败: %v", err)
+				slog.Error("数据同步失败", "error", err)
 			} else {
-				log.Println("数据同步完成")
+				slog.Info("数据同步完成")
 			}
 		} else {
-			log.Printf("距上次同步不足 %d 小时，跳过本次启动同步", cfg.Sync.MinIntervalHours)
+			slog.Info("距上次同步不足指定小时，跳过本次启动同步", "min_interval_hours", cfg.Sync.MinIntervalHours)
 		}
 	}
 
 	// 定时同步（cron）
 	c := cron.New()
 	_, err = c.AddFunc(cfg.Sync.Cron, func() {
-		log.Println("定时同步触发")
+		slog.Info("定时同步触发")
 		if err := syncSvc.SyncWithRetry(&cfg.Sync); err != nil {
-			log.Printf("定时同步失败: %v", err)
+			slog.Error("定时同步失败", "error", err)
 		} else {
-			log.Println("定时同步完成")
+			slog.Info("定时同步完成")
 		}
 	})
 	if err != nil {
-		log.Fatalf("注册定时同步失败: %v", err)
+		slog.Error("注册定时同步失败", "error", err)
+		os.Exit(1)
 	}
 	c.Start()
-	log.Printf("定时同步已注册，cron: %s", cfg.Sync.Cron)
+	slog.Info("定时同步已注册", "cron", cfg.Sync.Cron)
 
 	// Router
 	r := router.Setup(authHandler, questionHandler, authMiddleware)
 
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
-	log.Printf("服务启动于 %s", addr)
+	slog.Info("服务启动", "addr", addr)
 	if err := r.Run(addr); err != nil {
-		log.Fatalf("服务启动失败: %v", err)
+		slog.Error("服务启动失败", "error", err)
+		os.Exit(1)
 	}
+}
+
+func setupLog(cfg *config.LogConfig) {
+	var writer io.Writer = os.Stdout
+
+	if cfg.File != "" {
+		dir := filepath.Dir(cfg.File)
+		if dir != "." {
+			if err := os.MkdirAll(dir, 0755); err != nil {
+				log.Fatalf("创建日志目录失败: %v", err)
+			}
+		}
+
+		lj := &lumberjack.Logger{
+			Filename:   cfg.File,
+			MaxSize:    cfg.MaxSize,
+			MaxBackups: cfg.MaxBackups,
+			MaxAge:     cfg.MaxAge,
+			Compress:   cfg.Compress,
+		}
+
+		// 同时写入 stdout 和文件
+		writer = io.MultiWriter(os.Stdout, lj)
+	}
+
+	handler := slog.NewTextHandler(writer, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})
+	slog.SetDefault(slog.New(handler))
+
+	// 标准 log 包也重定向到同一输出（用于第三方库和 Fatal）
+	log.SetOutput(writer)
+
+	slog.Info("日志已初始化", "file", cfg.File)
 }

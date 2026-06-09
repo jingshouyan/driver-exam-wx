@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -33,7 +33,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	token, openID, err := h.svc.Login(c.Request.Context(), req.Code)
 	if err != nil {
-		log.Printf("login failed: %v", err)
+		slog.Error("登录失败", "error", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "登录失败"})
 		return
 	}

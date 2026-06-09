@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	"driver-exam-wx/config"
@@ -73,7 +73,7 @@ func (s *SyncService) SyncAll() error {
 			return fmt.Errorf(msg)
 		}
 
-		log.Printf("科目%d 拉取到 %d 条题目", subject, len(items))
+		slog.Info("拉取题目", "subject", subject, "count", len(items))
 
 		for _, item := range items {
 			q := convertToQuestion(item, subject)
@@ -90,7 +90,7 @@ func (s *SyncService) SyncAll() error {
 	}
 
 	msg := fmt.Sprintf("同步完成，共处理 %d 条题目", totalUpserted)
-	log.Println(msg)
+	slog.Info(msg)
 	s.db.Model(&record).Updates(map[string]interface{}{
 		"status":  "success",
 		"message": msg,
@@ -112,7 +112,7 @@ func (s *SyncService) SyncWithRetry(cfg *config.SyncConfig) error {
 
 	for i := 0; i <= maxRetries; i++ {
 		if i > 0 {
-			log.Printf("同步重试 %d/%d，等待 %d 秒后重试...", i, maxRetries, retryInterval)
+			slog.Info("同步重试", "attempt", i, "max_retries", maxRetries, "wait_sec", retryInterval)
 			time.Sleep(time.Duration(retryInterval) * time.Second)
 		}
 
@@ -121,7 +121,7 @@ func (s *SyncService) SyncWithRetry(cfg *config.SyncConfig) error {
 			return nil
 		}
 
-		log.Printf("同步失败: %v", lastErr)
+		slog.Error("同步失败", "error", lastErr)
 	}
 
 	return fmt.Errorf("同步失败，已重试 %d 次: %v", maxRetries, lastErr)

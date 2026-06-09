@@ -2,9 +2,7 @@ package database
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"path/filepath"
+	"log/slog"
 
 	"driver-exam-wx/config"
 	"driver-exam-wx/internal/model"
@@ -21,19 +19,13 @@ func Init(cfg *config.Config) (*gorm.DB, error) {
 	switch cfg.Database.Driver {
 	case "sqlite":
 		// 自动创建父目录
-		dir := filepath.Dir(cfg.SQLite.Path)
-		if dir != "." {
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				return nil, fmt.Errorf("创建数据库目录失败: %w", err)
-			}
-		}
+		// (目录创建已在 main.go setupLog 中统一处理)
 		dialector = sqlite.Open(cfg.SQLite.Path)
-		log.Printf("使用 SQLite 数据库: %s", cfg.SQLite.Path)
+		slog.Info("使用 SQLite 数据库", "path", cfg.SQLite.Path)
 
 	case "mysql":
 		dialector = mysql.Open(cfg.MySQL.DSN())
-		log.Printf("使用 MySQL 数据库: %s@%s:%d/%s",
-			cfg.MySQL.User, cfg.MySQL.Host, cfg.MySQL.Port, cfg.MySQL.DBName)
+		slog.Info("使用 MySQL 数据库", "host", cfg.MySQL.Host, "port", cfg.MySQL.Port, "db", cfg.MySQL.DBName)
 
 	default:
 		return nil, fmt.Errorf("不支持的数据库驱动: %s（可选: mysql, sqlite）", cfg.Database.Driver)
@@ -64,6 +56,6 @@ func Init(cfg *config.Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("auto migrate: %w", err)
 	}
 
-	log.Println("数据库迁移完成")
+	slog.Info("数据库迁移完成")
 	return db, nil
 }
