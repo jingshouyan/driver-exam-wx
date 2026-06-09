@@ -24,7 +24,7 @@ func main() {
 		log.Fatalf("加载配置失败: %v", err)
 	}
 
-	db, err := database.Init(&cfg.MySQL)
+	db, err := database.Init(cfg)
 	if err != nil {
 		log.Fatalf("数据库初始化失败: %v", err)
 	}

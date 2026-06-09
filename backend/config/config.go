@@ -7,17 +7,25 @@ import (
 )
 
 type Config struct {
-	Server  ServerConfig  `mapstructure:"server"`
-	MySQL   MySQLConfig   `mapstructure:"mysql"`
-	JisuAPI JisuAPIConfig `mapstructure:"jisuapi"`
-	WeChat  WeChatConfig  `mapstructure:"wechat"`
-	Sync    SyncConfig    `mapstructure:"sync"`
+	Server   ServerConfig   `mapstructure:"server"`
+	Database DatabaseConfig `mapstructure:"database"`
+	MySQL    MySQLConfig    `mapstructure:"mysql"`
+	SQLite   SQLiteConfig   `mapstructure:"sqlite"`
+	JisuAPI  JisuAPIConfig  `mapstructure:"jisuapi"`
+	WeChat   WeChatConfig   `mapstructure:"wechat"`
+	Sync     SyncConfig     `mapstructure:"sync"`
 }
 
 type ServerConfig struct {
 	Port int `mapstructure:"port"`
 }
 
+// DatabaseConfig 数据库驱动选择
+type DatabaseConfig struct {
+	Driver string `mapstructure:"driver"` // "mysql" 或 "sqlite"
+}
+
+// MySQLConfig MySQL 连接配置
 type MySQLConfig struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
@@ -31,6 +39,11 @@ func (m MySQLConfig) DSN() string {
 		m.User, m.Password, m.Host, m.Port, m.DBName)
 }
 
+// SQLiteConfig SQLite 连接配置
+type SQLiteConfig struct {
+	Path string `mapstructure:"path"` // 数据库文件路径，如 "data/driver_exam.db"
+}
+
 type JisuAPIConfig struct {
 	Key string `mapstructure:"key"`
 }
@@ -41,11 +54,11 @@ type WeChatConfig struct {
 }
 
 type SyncConfig struct {
-	Cron              string `mapstructure:"cron"`
-	OnStartup         bool   `mapstructure:"on_startup"`
-	RetryInterval     int    `mapstructure:"retry_interval"`
-	MaxRetries        int    `mapstructure:"max_retries"`
-	MinIntervalHours  int    `mapstructure:"min_interval_hours"`
+	Cron             string `mapstructure:"cron"`
+	OnStartup        bool   `mapstructure:"on_startup"`
+	RetryInterval    int    `mapstructure:"retry_interval"`
+	MaxRetries       int    `mapstructure:"max_retries"`
+	MinIntervalHours int    `mapstructure:"min_interval_hours"`
 }
 
 func Load(path string) (*Config, error) {
@@ -55,6 +68,11 @@ func Load(path string) (*Config, error) {
 
 	if err := v.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("read config: %w", err)
+	}
+
+	// 默认驱动
+	if !v.IsSet("database.driver") {
+		v.Set("database.driver", "mysql")
 	}
 
 	var cfg Config
