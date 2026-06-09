@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
+	"os"
+	"path/filepath"
 
 	"driver-exam-wx/config"
 	"driver-exam-wx/internal/database"
@@ -22,6 +25,22 @@ func main() {
 	cfg, err := config.Load(*configPath)
 	if err != nil {
 		log.Fatalf("加载配置失败: %v", err)
+	}
+
+	// 日志文件
+	if cfg.Log.File != "" {
+		dir := filepath.Dir(cfg.Log.File)
+		if dir != "." {
+			if err := os.MkdirAll(dir, 0755); err != nil {
+				log.Fatalf("创建日志目录失败: %v", err)
+			}
+		}
+		f, err := os.OpenFile(cfg.Log.File, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			log.Fatalf("打开日志文件失败: %v", err)
+		}
+		log.SetOutput(io.MultiWriter(os.Stdout, f))
+		log.Printf("日志已写入: %s", cfg.Log.File)
 	}
 
 	db, err := database.Init(cfg)

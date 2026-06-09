@@ -8,12 +8,17 @@ import (
 
 type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
+	Log      LogConfig      `mapstructure:"log"`
 	Database DatabaseConfig `mapstructure:"database"`
 	MySQL    MySQLConfig    `mapstructure:"mysql"`
 	SQLite   SQLiteConfig   `mapstructure:"sqlite"`
 	JisuAPI  JisuAPIConfig  `mapstructure:"jisuapi"`
 	WeChat   WeChatConfig   `mapstructure:"wechat"`
 	Sync     SyncConfig     `mapstructure:"sync"`
+}
+
+type LogConfig struct {
+	File string `mapstructure:"file"` // 日志文件路径，为空则输出到 stdout
 }
 
 type ServerConfig struct {

@@ -24,6 +24,10 @@ wechat:
   appid: "your_appid"
   secret: "your_secret"
 
+# 日志文件路径，为空则输出到 stdout
+log:
+  file: "logs/app.log"
+
 sync:
   cron: "0 3 * * *"
   on_startup: true
