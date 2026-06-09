@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  password: "your_password"
+  db_name: "driver_exam"
+
+jisuapi:
+  key: "your_jisuapi_key"
+
+wechat:
+  appid: "your_appid"
+  secret: "your_secret"
+
+sync:
+  cron: "0 3 * * *"
+  on_startup: true
+  retry_interval: 30   # 重试间隔（秒）
+  max_retries: 3
+  min_interval_hours: 24  # 启动同步最小间隔（小时）
