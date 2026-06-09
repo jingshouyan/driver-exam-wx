@@ -38,9 +38,9 @@ type QueryResponse struct {
 	Status int    `json:"status"`
 	Msg    string `json:"msg"`
 	Result *struct {
-		Total    string         `json:"total"`
-		PageNum  string         `json:"pagenum"`
-		PageSize string         `json:"pagesize"`
+		Total    int            `json:"total"`
+		PageNum  int            `json:"pagenum"`
+		PageSize int            `json:"pagesize"`
 		Subject  string         `json:"subject"`
 		Type     string         `json:"type"`
 		Sort     string         `json:"sort"`
@@ -125,8 +125,7 @@ func (c *Client) QueryAll(ctx context.Context, subject int) ([]QuestionItem, err
 		all = append(all, resp.Result.List...)
 
 		// 判断是否还有下一页
-		total, _ := strconv.Atoi(resp.Result.Total)
-		if len(all) >= total {
+		if len(all) >= resp.Result.Total {
 			break
 		}
 	}
