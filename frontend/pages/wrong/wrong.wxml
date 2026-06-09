@@ -17,7 +17,7 @@
     <view class="wrong-card" bindtap="toggleDetail" data-index="{{index}}">
       <view class="wrong-header">
         <text class="wrong-subject">科目{{item.subject}}</text>
-        <text class="wrong-mark" wx:if="{{item.marked}}" bindtap.stop="toggleMark" data-id="{{item.id}}">🔖 已标记</text>
+        <text class="wrong-mark" wx:if="{{item.marked}}" catchtap="toggleMark" data-id="{{item.id}}">🔖 已标记</text>
       </view>
       <text class="wrong-question">{{item.question}}</text>
       <view class="wrong-answer">
@@ -37,7 +37,7 @@
           <text>{{item.explain}}</text>
         </view>
         <view class="detail-actions">
-          <view class="detail-btn" bindtap.stop="removeWrong" data-id="{{item.id}}">移出错题本</view>
+          <view class="detail-btn" catchtap="removeWrong" data-id="{{item.id}}">移出错题本</view>
         </view>
       </view>
     </view>
