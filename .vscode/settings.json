@@ -1,0 +1,13 @@
+{
+  "go.gopath": "",
+  "go.goroot": "",
+  "go.useLanguageServer": true,
+  "gopls": {
+    "build.buildFlags": []
+  },
+  "files.eol": "\n",
+  "files.associations": {
+    "*.wxml": "html",
+    "*.wxss": "css"
+  }
+}
