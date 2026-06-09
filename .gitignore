@@ -36,6 +36,9 @@ logs/
 # env file
 .env
 
+# Runtime config (contains API keys & secrets)
+backend/config.yaml
+
 # Editor/IDE
 # .idea/
 # .vscode/
