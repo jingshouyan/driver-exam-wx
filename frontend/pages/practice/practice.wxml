@@ -1,0 +1,84 @@
+<view class="page">
+  <!-- 顶部信息栏 -->
+  <view class="top-bar">
+    <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
+    <view class="voice-toggle" bindtap="toggleVoice">
+      <text>{{voiceEnabled ? '🔊 语音开' : '🔇 语音关'}}</text>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{!questions.length}}">
+    <text>加载题目中...</text>
+  </view>
+
+  <!-- 答题区 -->
+  <block wx:for="{{questions}}" wx:key="id" wx:for-index="i">
+    <view class="question-area" wx:if="{{i === currentIndex}}">
+      <!-- 题目 -->
+      <view class="card question-card">
+        <view class="q-label">第 {{currentIndex + 1}} 题</view>
+        <view class="q-text">{{item.question}}</view>
+        <image class="q-pic" wx:if="{{item.pic}}" src="{{item.pic}}" mode="widthFix"></image>
+      </view>
+
+      <!-- 选项 -->
+      <view class="options">
+        <view class="option {{getOptionClass(item, 'A')}}" bindtap="selectOption" data-option="A" wx:if="{{item.option1}}">
+          <text class="option-label">A</text>
+          <text class="option-text">{{formatOption(item.option1)}}</text>
+        </view>
+        <view class="option {{getOptionClass(item, 'B')}}" bindtap="selectOption" data-option="B" wx:if="{{item.option2}}">
+          <text class="option-label">B</text>
+          <text class="option-text">{{formatOption(item.option2)}}</text>
+        </view>
+        <view class="option {{getOptionClass(item, 'C')}}" bindtap="selectOption" data-option="C" wx:if="{{item.option3}}">
+          <text class="option-label">C</text>
+          <text class="option-text">{{formatOption(item.option3)}}</text>
+        </view>
+        <view class="option {{getOptionClass(item, 'D')}}" bindtap="selectOption" data-option="D" wx:if="{{item.option4}}">
+          <text class="option-label">D</text>
+          <text class="option-text">{{formatOption(item.option4)}}</text>
+        </view>
+      </view>
+
+      <!-- 答题反馈 -->
+      <view class="feedback" wx:if="{{answered}}">
+        <view class="result-badge {{isCorrect ? 'correct' : 'wrong'}}">
+          {{isCorrect ? '✅ 回答正确' : '❌ 回答错误'}}
+        </view>
+        <view class="correct-answer">正确答案：{{item.answer}}</view>
+        <view class="explain" wx:if="{{item.explain}}">{{item.explain}}</view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="actions" wx:if="{{answered}}">
+        <view class="action-btn secondary" bindtap="toggleMark">
+          {{item.marked ? '✅ 已标记' : '🔖 标记回顾'}}
+        </view>
+        <view class="action-btn primary" bindtap="nextQuestion">
+          {{currentIndex < questions.length - 1 ? '下一题 →' : '完成练习'}}
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 完成页 -->
+  <view class="complete-area" wx:if="{{isComplete}}">
+    <view class="card complete-card">
+      <text class="complete-icon">🎉</text>
+      <text class="complete-title">练习完成</text>
+      <text class="complete-stat">共 {{questions.length}} 题</text>
+      <view class="complete-bar">
+        <view class="bar-correct" style="width: {{correctRate}}%"></view>
+      </view>
+      <text class="complete-rate">正确率 {{correctRate}}%</text>
+    </view>
+    <view class="action-btn primary" bindtap="goHome">返回首页</view>
+  </view>
+
+  <!-- ASR 状态指示 -->
+  <view class="asr-indicator {{asrActive ? 'listening' : ''}}" wx:if="{{voiceEnabled && !answered}}">
+    <text>{{asrActive ? '🎤 正在听...' : ''}}</text>
+  </view>
+</view>

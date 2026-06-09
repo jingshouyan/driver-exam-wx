@@ -1,0 +1,48 @@
+<view class="page">
+  <!-- 顶部标题 -->
+  <view class="header">
+    <image class="logo" src="/images/logo.png" mode="aspectFit"></image>
+    <text class="title">驾考学习</text>
+    <text class="subtitle">科目一 · 科目四</text>
+  </view>
+
+  <!-- 科目选择 -->
+  <view class="section">
+    <text class="section-title">选择科目</text>
+    <view class="subject-row">
+      <view class="subject-card {{selectedSubject === 1 ? 'active' : ''}}" bindtap="selectSubject" data-subject="1">
+        <text class="subject-num">科目一</text>
+        <text class="subject-desc">道路交通安全法律</text>
+      </view>
+      <view class="subject-card {{selectedSubject === 4 ? 'active' : ''}}" bindtap="selectSubject" data-subject="4">
+        <text class="subject-num">科目四</text>
+        <text class="subject-desc">安全文明驾驶</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 模式选择 -->
+  <view class="section" wx:if="{{selectedSubject}}">
+    <text class="section-title">选择模式</text>
+    <view class="mode-list">
+      <view class="mode-card" bindtap="goPractice">
+        <text class="mode-icon">📝</text>
+        <text class="mode-name">练习模式</text>
+        <text class="mode-desc">逐题作答，即时显示答案和解析</text>
+      </view>
+      <view class="mode-card" bindtap="goExam">
+        <text class="mode-icon">📋</text>
+        <text class="mode-name">模拟考试</text>
+        <text class="mode-desc">限时答题，交卷后出分</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部入口 -->
+  <view class="bottom-links">
+    <view class="link-item" bindtap="goWrongBook">
+      <text>📕 错题本</text>
+      <text class="badge" wx:if="{{wrongCount > 0}}">{{wrongCount}}</text>
+    </view>
+  </view>
+</view>

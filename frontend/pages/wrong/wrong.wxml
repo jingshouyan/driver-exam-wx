@@ -1,0 +1,50 @@
+<view class="page">
+  <!-- 科目筛选 -->
+  <view class="filter-bar">
+    <view class="filter-tab {{filterSubject === 0 ? 'active' : ''}}" bindtap="setFilter" data-subject="0">全部</view>
+    <view class="filter-tab {{filterSubject === 1 ? 'active' : ''}}" bindtap="setFilter" data-subject="1">科目一</view>
+    <view class="filter-tab {{filterSubject === 4 ? 'active' : ''}}" bindtap="setFilter" data-subject="4">科目四</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{filteredList.length === 0}}">
+    <text class="empty-icon">📭</text>
+    <text class="empty-text">暂无错题，继续加油！</text>
+  </view>
+
+  <!-- 错题列表 -->
+  <view class="wrong-list" wx:for="{{filteredList}}" wx:key="id">
+    <view class="wrong-card" bindtap="toggleDetail" data-index="{{index}}">
+      <view class="wrong-header">
+        <text class="wrong-subject">科目{{item.subject}}</text>
+        <text class="wrong-mark" wx:if="{{item.marked}}" bindtap.stop="toggleMark" data-id="{{item.id}}">🔖 已标记</text>
+      </view>
+      <text class="wrong-question">{{item.question}}</text>
+      <view class="wrong-answer">
+        正确答案：<text class="answer-text">{{item.answer}}</text>
+      </view>
+
+      <!-- 展开详情 -->
+      <view class="detail" wx:if="{{expandedIndex === index}}">
+        <view class="detail-options" wx:for="{{['A','B','C','D']}}" wx:for-index="oi" wx:key="*this">
+          <view class="detail-option" wx:if="{{getOption(item, oi)}}">
+            <text class="opt-label {{item.answer === optLabels[oi] ? 'correct' : ''}}">{{optLabels[oi]}}</text>
+            <text class="opt-text">{{getOption(item, oi)}}</text>
+          </view>
+        </view>
+        <view class="detail-explain" wx:if="{{item.explain}}">
+          <text class="explain-label">解析：</text>
+          <text>{{item.explain}}</text>
+        </view>
+        <view class="detail-actions">
+          <view class="detail-btn" bindtap.stop="removeWrong" data-id="{{item.id}}">移出错题本</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 清空按钮 -->
+  <view class="clear-bar" wx:if="{{filteredList.length > 0}}">
+    <view class="clear-btn" bindtap="clearSubject">清空科目{{filterSubject === 0 ? '' : filterSubject}}错题</view>
+  </view>
+</view>

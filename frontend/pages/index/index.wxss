@@ -1,0 +1,139 @@
+.page {
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* 头部 */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0 32px;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* 区块 */
+.section {
+  margin: 0 16px 24px;
+}
+
+.section-title {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+/* 科目选择 */
+.subject-row {
+  display: flex;
+  gap: 12px;
+}
+
+.subject-card {
+  flex: 1;
+  padding: 20px 12px;
+  background-color: #fff;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.subject-card.active {
+  border-color: #07c160;
+  background-color: #f0fff5;
+}
+
+.subject-num {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.subject-desc {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* 模式 */
+.mode-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mode-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.mode-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.mode-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.mode-desc {
+  font-size: 13px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* 底部链接 */
+.bottom-links {
+  margin: 0 16px;
+}
+
+.link-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 12px;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.badge {
+  margin-left: auto;
+  background-color: #ee0a24;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
