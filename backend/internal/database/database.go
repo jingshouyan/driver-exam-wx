@@ -3,12 +3,14 @@ package database
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"driver-exam-wx/config"
 	"driver-exam-wx/internal/model"
 
-	"gorm.io/driver/mysql"
 	"github.com/glebarez/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -18,6 +20,13 @@ func Init(cfg *config.Config) (*gorm.DB, error) {
 
 	switch cfg.Database.Driver {
 	case "sqlite":
+		// 自动创建父目录
+		dir := filepath.Dir(cfg.SQLite.Path)
+		if dir != "." {
+			if err := os.MkdirAll(dir, 0755); err != nil {
+				return nil, fmt.Errorf("创建数据库目录失败: %w", err)
+			}
+		}
 		dialector = sqlite.Open(cfg.SQLite.Path)
 		log.Printf("使用 SQLite 数据库: %s", cfg.SQLite.Path)
 
