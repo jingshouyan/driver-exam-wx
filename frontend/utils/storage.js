@@ -2,6 +2,7 @@
  * 本地存储工具
  * 管理 token、答题进度、错题本
  */
+const qutil = require('./question')
 
 const WRONG_KEY = 'wrong_questions'
 
@@ -19,14 +20,15 @@ function addWrongQuestion(question) {
   const list = getWrongQuestions()
   // 去重
   if (!list.some(q => q.id === question.id)) {
+    const normalized = qutil.normalize(question)
     list.unshift({
-      id: question.id,
-      subject: question.subject,
-      question: question.question,
-      option1: question.option1,
-      option2: question.option2,
-      option3: question.option3,
-      option4: question.option4,
+      id: normalized.id,
+      subject: normalized.subject,
+      question: normalized.question,
+      option1: normalized.option1,
+      option2: normalized.option2,
+      option3: normalized.option3,
+      option4: normalized.option4,
       answer: question.answer,
       explain: question.explain,
       pic: question.pic,

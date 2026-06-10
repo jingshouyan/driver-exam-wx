@@ -1,5 +1,6 @@
 const api = require('../../utils/api')
 const storage = require('../../utils/storage')
+const qutil = require('../../utils/question')
 
 Page({
   data: {
@@ -27,7 +28,7 @@ Page({
     wx.showLoading({ title: '加载中...' })
     api.getQuestions(subject, 1, 100)
       .then(data => {
-        const questions = (data.questions || []).map(q => ({ ...q, marked: false }))
+        const questions = (data.questions || []).map(q => ({ ...qutil.normalize(q), marked: false }))
         this.setData({ 
           questions,
           answers: new Array(questions.length).fill(''),
