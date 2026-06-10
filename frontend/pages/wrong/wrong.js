@@ -1,4 +1,5 @@
 const storage = require('../../utils/storage')
+const qutil = require('../../utils/question')
 
 Page({
   data: {
@@ -14,7 +15,7 @@ Page({
   },
 
   loadData() {
-    const list = storage.getWrongQuestions()
+    const list = storage.getWrongQuestions().map(q => qutil.normalize(q))
     this.setData({ wrongList: list })
     this.filterList()
   },
