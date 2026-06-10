@@ -44,7 +44,7 @@
         <view class="result-badge {{isCorrect ? 'correct' : 'wrong'}}">
           {{isCorrect ? '✅ 回答正确' : '❌ 回答错误'}}
         </view>
-        <view class="correct-answer">正确答案：{{item.answer}}</view>
+        <view class="correct-answer">正确答案：{{item.answerText}}</view>
         <view class="explain" wx:if="{{item.explain}}">{{item.explain}}</view>
       </view>
 

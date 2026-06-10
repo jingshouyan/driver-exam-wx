@@ -15,14 +15,7 @@ Page({
   },
 
   loadData() {
-    const list = storage.getWrongQuestions().map(q => {
-      const nq = qutil.normalize(q)
-      // 预计算正确答案对应的选项文本，如 "A、对"
-      const map = { A: 1, B: 2, C: 3, D: 4 }
-      const idx = map[nq.answer]
-      nq.answerText = idx ? (nq.answer + '、' + (nq['option' + idx] || '')) : nq.answer
-      return nq
-    })
+    const list = storage.getWrongQuestions().map(q => qutil.normalize(q))
     this.setData({ wrongList: list })
     this.filterList()
   },

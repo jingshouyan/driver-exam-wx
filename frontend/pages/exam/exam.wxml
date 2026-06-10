@@ -77,7 +77,7 @@
       <text class="section-title">答错题目（{{wrongList.length}} 题）</text>
       <view class="wrong-item" wx:for="{{wrongList}}" wx:key="id" bindtap="goPractice">
         <text class="wrong-q">{{item.question}}</text>
-        <text class="wrong-answer">正确答案：{{item.answer}}</text>
+        <text class="wrong-answer">正确答案：{{item.answerText}}</text>
       </view>
     </view>
 
