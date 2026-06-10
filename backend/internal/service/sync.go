@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"driver-exam-wx/config"
@@ -152,17 +153,40 @@ func convertToQuestion(item jisuapi.QuestionItem, subject int) model.Question {
 	q := model.Question{
 		Subject:  subject,
 		Question: item.Question,
-		Option1:  item.Option1,
-		Option2:  item.Option2,
-		Option3:  item.Option3,
-		Option4:  item.Option4,
+		Option1:  cleanOption(item.Option1),
+		Option2:  cleanOption(item.Option2),
+		Option3:  cleanOption(item.Option3),
+		Option4:  cleanOption(item.Option4),
 		Answer:   item.Answer,
 		Explain:  item.Explain,
 		Pic:      item.Pic,
 	}
-	// 计算 content_hash
+
+	// 判断题：API 选项为空，则生成 A=对 B=错，answer 转 A/B
+	if q.Option1 == "" && q.Option2 == "" && q.Option3 == "" && q.Option4 == "" {
+		q.Option1 = "对"
+		q.Option2 = "错"
+		switch q.Answer {
+		case "对":
+			q.Answer = "A"
+		case "错":
+			q.Answer = "B"
+		}
+	}
+
+	// 计算 content_hash（基于标准化后的数据）
 	q.ContentHash = computeContentHash(&q)
 	return q
+}
+
+// cleanOption 去掉选项前缀 "A、"，如 "A、工作证" → "工作证"
+func cleanOption(opt string) string {
+	opt = strings.TrimSpace(opt)
+	r := []rune(opt)
+	if len(r) >= 2 && r[1] == '、' && r[0] >= 'A' && r[0] <= 'D' {
+		return string(r[2:])
+	}
+	return opt
 }
 
 // computeContentHash 计算题目内容的 SHA256 哈希（用于去重判断）
