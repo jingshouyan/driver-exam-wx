@@ -21,7 +21,7 @@
       </view>
       <text class="wrong-question">{{item.question}}</text>
       <view class="wrong-answer">
-        正确答案：<text class="answer-text">{{item.answer}}、{{optionContent(item)}}</text>
+        正确答案：<text class="answer-text">{{item.answerText}}</text>
       </view>
 
       <!-- 展开详情 -->

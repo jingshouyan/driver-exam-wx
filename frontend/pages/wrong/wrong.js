@@ -15,7 +15,14 @@ Page({
   },
 
   loadData() {
-    const list = storage.getWrongQuestions().map(q => qutil.normalize(q))
+    const list = storage.getWrongQuestions().map(q => {
+      const nq = qutil.normalize(q)
+      // 预计算正确答案对应的选项文本，如 "A、对"
+      const map = { A: 1, B: 2, C: 3, D: 4 }
+      const idx = map[nq.answer]
+      nq.answerText = idx ? (nq.answer + '、' + (nq['option' + idx] || '')) : nq.answer
+      return nq
+    })
     this.setData({ wrongList: list })
     this.filterList()
   },
@@ -92,10 +99,4 @@ Page({
   },
 
   /** 根据答案字母获取选项内容，如 answer=A 返回 "对" */
-  optionContent(item) {
-    const map = { A: 1, B: 2, C: 3, D: 4 }
-    const idx = map[item.answer]
-    if (!idx) return ''
-    return item['option' + idx] || ''
-  },
 })
