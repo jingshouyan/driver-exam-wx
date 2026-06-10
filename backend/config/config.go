@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -78,6 +79,12 @@ func Load(path string) (*Config, error) {
 	if err := v.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("read config: %w", err)
 	}
+
+	// 环境变量覆盖：前缀 DRIVER_EXAM_，层级用 _ 分隔
+	// 例如 DRIVER_EXAM_DATABASE_DRIVER=sqlite 覆盖 database.driver
+	v.SetEnvPrefix("DRIVER_EXAM")
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.AutomaticEnv()
 
 	// 默认驱动
 	if !v.IsSet("database.driver") {
