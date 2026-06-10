@@ -86,6 +86,11 @@ func Load(path string) (*Config, error) {
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 
+	// 显式合并环境变量：Get 会触发 env 查找，Set 设为最高优先级
+	for _, key := range v.AllKeys() {
+		v.Set(key, v.Get(key))
+	}
+
 	// 默认驱动
 	if !v.IsSet("database.driver") {
 		v.Set("database.driver", "mysql")
