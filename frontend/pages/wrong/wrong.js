@@ -90,4 +90,12 @@ Page({
     const key = 'option' + (index + 1)
     return item[key] || ''
   },
+
+  /** 根据答案字母获取选项内容，如 answer=A 返回 "对" */
+  optionContent(item) {
+    const map = { A: 1, B: 2, C: 3, D: 4 }
+    const idx = map[item.answer]
+    if (!idx) return ''
+    return item['option' + idx] || ''
+  },
 })
