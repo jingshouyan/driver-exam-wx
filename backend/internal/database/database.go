@@ -45,6 +45,9 @@ func Init(cfg *config.Config) (*gorm.DB, error) {
 		Logger: gormLogger,
 	})
 	if err != nil {
+		if cfg.Database.Driver == "mysql" {
+			return nil, fmt.Errorf("open db (%s:%d): %w", cfg.MySQL.Host, cfg.MySQL.Port, err)
+		}
 		return nil, fmt.Errorf("open db: %w", err)
 	}
 
