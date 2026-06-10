@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"driver-exam-wx/config"
 	"driver-exam-wx/internal/database"
@@ -27,6 +28,16 @@ func main() {
 	cfg, err := config.Load(*configPath)
 	if err != nil {
 		log.Fatalf("加载配置失败: %v", err)
+	}
+
+	// 微信云托管通过 PORT 环境变量注入端口
+	if port := os.Getenv("PORT"); port != "" {
+		p, err := strconv.Atoi(port)
+		if err != nil {
+			log.Fatalf("PORT 环境变量格式错误: %s", port)
+		}
+		cfg.Server.Port = p
+		slog.Info("从环境变量读取端口", "port", p)
 	}
 
 	// 日志：slog + lumberjack

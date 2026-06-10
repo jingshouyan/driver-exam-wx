@@ -14,6 +14,11 @@ func Setup(
 ) *gin.Engine {
 	r := gin.Default()
 
+	// 健康检查（微信云托管需要）
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+
 	api := r.Group("/api/v1")
 	{
 		// 无需登录
