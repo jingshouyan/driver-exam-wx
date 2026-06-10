@@ -113,6 +113,17 @@
 }
 
 /* 底部链接 */
+/* 游客标识 */
+.guest-banner {
+  margin: 0 16px 12px;
+  padding: 8px;
+  text-align: center;
+  background-color: #fff8e1;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #f57f17;
+}
+
 .bottom-links {
   margin: 0 16px;
 }

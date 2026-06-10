@@ -28,10 +28,13 @@ func Setup(
 			auth.POST("/refresh", authHandler.RefreshToken)
 		}
 
-		// 需要登录
+		// 题目列表（游客可访问）
+		api.GET("/questions", questionHandler.ListQuestions)
+
+		// 需要登录的操作
 		api.Use(authMiddleware.Handle())
 		{
-			api.GET("/questions", questionHandler.ListQuestions)
+			// 预留后续需要登录的接口
 		}
 	}
 

@@ -38,6 +38,11 @@
     </view>
   </view>
 
+  <!-- 游客标识 -->
+  <view class="guest-banner" wx:if="{{isGuest}}">
+    <text>游客模式 — 登录后可同步错题本</text>
+  </view>
+
   <!-- 底部入口 -->
   <view class="bottom-links">
     <view class="link-item" bindtap="goWrongBook">

@@ -4,6 +4,7 @@ Page({
   data: {
     selectedSubject: 0,
     wrongCount: 0,
+    isGuest: false,
   },
 
   onShow() {
@@ -11,20 +12,16 @@ Page({
     this.loadWrongCount()
   },
 
-  /** 检查登录状态，未登录则触发微信登录 */
+  /** 自动登录，失败则游客模式 */
   checkLogin() {
     const app = getApp()
-    if (app.isLoggedIn()) return
+    if (app.isLoggedIn()) {
+      this.setData({ isGuest: false })
+      return
+    }
 
-    wx.login({
-      success: (res) => {
-        if (res.code) {
-          app.login(res.code).catch((err) => {
-            wx.showToast({ title: '登录失败', icon: 'none' })
-            console.error('login error:', err)
-          })
-        }
-      },
+    app.tryAutoLogin().then(loggedIn => {
+      this.setData({ isGuest: !loggedIn })
     })
   },
 

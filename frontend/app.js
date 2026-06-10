@@ -8,6 +8,7 @@ App({
   globalData: {
     token: '',
     openid: '',
+    isGuest: false,  // 游客模式
   },
 
   onLaunch() {
@@ -27,15 +28,38 @@ App({
     }
   },
 
-  /** 登录：调用后端换取 token */
-  login(code) {
-    return api.login(code).then(data => {
-      const { token, open_id } = data
-      this.globalData.token = token
-      this.globalData.openid = open_id
-      wx.setStorageSync('token', token)
-      wx.setStorageSync('openid', open_id)
-      return data
+  /** 尝试自动登录，失败则进入游客模式 */
+  tryAutoLogin() {
+    if (this.isLoggedIn()) return Promise.resolve(true)
+
+    return new Promise(resolve => {
+      wx.login({
+        success: (res) => {
+          if (res.code) {
+            api.login(res.code)
+              .then(data => {
+                const { token, open_id } = data
+                this.globalData.token = token
+                this.globalData.openid = open_id
+                wx.setStorageSync('token', token)
+                wx.setStorageSync('openid', open_id)
+                resolve(true)
+              })
+              .catch(() => {
+                // 登录失败 → 游客模式
+                this.globalData.isGuest = true
+                resolve(false)
+              })
+          } else {
+            this.globalData.isGuest = true
+            resolve(false)
+          }
+        },
+        fail: () => {
+          this.globalData.isGuest = true
+          resolve(false)
+        },
+      })
     })
   },
 
