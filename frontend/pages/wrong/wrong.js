@@ -88,6 +88,6 @@ Page({
 
   getOption(item, index) {
     const key = 'option' + (index + 1)
-    return item[key] ? item[key].replace(/^[A-D]、/, '') : ''
+    return item[key] || ''
   },
 })

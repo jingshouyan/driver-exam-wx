@@ -24,19 +24,19 @@
       <view class="options">
         <view class="option {{selectedOption === 'A' ? 'selected' : ''}}" bindtap="selectOption" data-option="A" wx:if="{{item.option1}}">
           <text class="option-label">A</text>
-          <text class="option-text">{{formatOption(item.option1)}}</text>
+          <text class="option-text">{{item.option1}}</text>
         </view>
         <view class="option {{selectedOption === 'B' ? 'selected' : ''}}" bindtap="selectOption" data-option="B" wx:if="{{item.option2}}">
           <text class="option-label">B</text>
-          <text class="option-text">{{formatOption(item.option2)}}</text>
+          <text class="option-text">{{item.option2}}</text>
         </view>
         <view class="option {{selectedOption === 'C' ? 'selected' : ''}}" bindtap="selectOption" data-option="C" wx:if="{{item.option3}}">
           <text class="option-label">C</text>
-          <text class="option-text">{{formatOption(item.option3)}}</text>
+          <text class="option-text">{{item.option3}}</text>
         </view>
         <view class="option {{selectedOption === 'D' ? 'selected' : ''}}" bindtap="selectOption" data-option="D" wx:if="{{item.option4}}">
           <text class="option-label">D</text>
-          <text class="option-text">{{formatOption(item.option4)}}</text>
+          <text class="option-text">{{item.option4}}</text>
         </view>
       </view>
 

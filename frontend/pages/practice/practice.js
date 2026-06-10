@@ -38,16 +38,6 @@ Page({
       })
   },
 
-  /** 格式化选项文字（去掉 "A、" 前缀） */
-  formatOption(text) {
-    if (!text) return ''
-    const cleaned = text.replace(/^[A-D]、/, '')
-    if (!cleaned) {
-      console.warn('选项内容为空, raw:', text)
-    }
-    return cleaned
-  },
-
   /** 获取选项样式 */
   getOptionClass(item, opt) {
     if (!this.data.answered) {

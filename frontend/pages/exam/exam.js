@@ -42,11 +42,6 @@ Page({
       })
   },
 
-  formatOption(text) {
-    if (!text) return ''
-    return text.replace(/^[A-D]、/, '')
-  },
-
   /** 选择选项 */
   selectOption(e) {
     const option = e.currentTarget.dataset.option
