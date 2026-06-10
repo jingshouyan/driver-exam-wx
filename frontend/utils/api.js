@@ -1,50 +1,90 @@
 /**
  * 后端 API 封装
  *
- * API 地址在 frontend/config.js 中配置
- * 本地开发：http://localhost:8080
- * 云托管部署：改成云托管的访问地址
+ * 支持两种模式：
+ *   1. wx.cloud.callContainer（云托管部署）
+ *   2. wx.request（本地开发）
+ *
+ * 模式切换在 config.js 中配置
  */
 const CONFIG = require('../config')
+const CLOUD_MODE = CONFIG.useCloud
 const BASE_URL = CONFIG.apiBaseUrl + '/api/v1'
 
-/** 通用请求 */
+/**
+ * 通用请求
+ * 自动选择 cloud.callContainer 或 wx.request
+ */
 function request(method, path, data) {
   const app = getApp()
   const token = app.globalData.token || wx.getStorageSync('token')
 
   return new Promise((resolve, reject) => {
-    wx.request({
-      url: BASE_URL + path,
-      method,
-      data,
-      header: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: 'Bearer ' + token } : {}),
-      },
-      success(res) {
-        if (res.data.code === 0) {
-          resolve(res.data.data)
-        } else if (res.statusCode === 401) {
-          // token 过期，尝试刷新
-          refreshToken().then(() => {
-            // 重试请求
-            request(method, path, data).then(resolve).catch(reject)
-          }).catch(() => {
-            // 刷新失败，重新登录
-            wx.removeStorageSync('token')
-            wx.removeStorageSync('openid')
-            wx.navigateTo({ url: '/pages/index/index' })
-            reject(new Error('登录已过期'))
-          })
-        } else {
-          reject(new Error(res.data.msg || '请求失败'))
-        }
-      },
-      fail(err) {
-        reject(err)
-      },
-    })
+    const commonHeader = {
+      'Content-Type': 'application/json',
+      ...(token && !CLOUD_MODE ? { Authorization: 'Bearer ' + token } : {}),
+    }
+
+    if (CLOUD_MODE) {
+      // === 云托管模式 ===
+      wx.cloud.callContainer({
+        config: { env: CONFIG.cloudEnv },
+        path: '/api/v1' + path,
+        method,
+        data,
+        header: {
+          ...commonHeader,
+          'X-WX-SERVICE': CONFIG.cloudService,
+        },
+        success(res) {
+          // callContainer 的响应在 res.data 里
+          const body = res.data
+          if (body.code === 0) {
+            resolve(body.data)
+          } else if (res.statusCode === 401 || res.statusCode === 403) {
+            handleTokenExpired(method, path, data).then(resolve).catch(reject)
+          } else {
+            reject(new Error(body.msg || '请求失败'))
+          }
+        },
+        fail(err) {
+          reject(new Error(err.errMsg || '网络错误'))
+        },
+      })
+    } else {
+      // === 本地开发模式 ===
+      wx.request({
+        url: BASE_URL + path,
+        method,
+        data,
+        header: commonHeader,
+        success(res) {
+          if (res.data.code === 0) {
+            resolve(res.data.data)
+          } else if (res.statusCode === 401) {
+            handleTokenExpired(method, path, data).then(resolve).catch(reject)
+          } else {
+            reject(new Error(res.data.msg || '请求失败'))
+          }
+        },
+        fail(err) {
+          reject(new Error(err.errMsg || '网络错误'))
+        },
+      })
+    }
+  })
+}
+
+/** token 过期处理：刷新后重试 */
+function handleTokenExpired(method, path, data) {
+  return refreshToken().then(() => {
+    return request(method, path, data)
+  }).catch(() => {
+    // 刷新失败，清登录态
+    wx.removeStorageSync('token')
+    wx.removeStorageSync('openid')
+    wx.navigateTo({ url: '/pages/index/index' })
+    throw new Error('登录已过期')
   })
 }
 
@@ -55,22 +95,54 @@ function refreshToken() {
   if (!token) return Promise.reject(new Error('无 token'))
 
   return new Promise((resolve, reject) => {
-    wx.request({
-      url: BASE_URL + '/auth/refresh',
-      method: 'POST',
-      header: { Authorization: 'Bearer ' + token },
-      success(res) {
-        if (res.data.code === 0) {
-          const newToken = res.data.data.token
-          app.globalData.token = newToken
-          wx.setStorageSync('token', newToken)
-          resolve()
-        } else {
-          reject(new Error('刷新失败'))
-        }
-      },
-      fail: reject,
-    })
+    const doRefresh = () => {
+      const opts = {
+        method: 'POST',
+        data: {},
+        header: { Authorization: 'Bearer ' + token },
+      }
+
+      if (CLOUD_MODE) {
+        wx.cloud.callContainer({
+          config: { env: CONFIG.cloudEnv },
+          path: '/api/v1/auth/refresh',
+          ...opts,
+          header: {
+            ...opts.header,
+            'X-WX-SERVICE': CONFIG.cloudService,
+            'Content-Type': 'application/json',
+          },
+          success(res) {
+            if (res.data && res.data.code === 0) {
+              const newToken = res.data.data.token
+              app.globalData.token = newToken
+              wx.setStorageSync('token', newToken)
+              resolve()
+            } else {
+              reject(new Error('刷新失败'))
+            }
+          },
+          fail: reject,
+        })
+      } else {
+        wx.request({
+          url: BASE_URL + '/auth/refresh',
+          ...opts,
+          success(res) {
+            if (res.data.code === 0) {
+              const newToken = res.data.data.token
+              app.globalData.token = newToken
+              wx.setStorageSync('token', newToken)
+              resolve()
+            } else {
+              reject(new Error('刷新失败'))
+            }
+          },
+          fail: reject,
+        })
+      }
+    }
+    doRefresh()
   })
 }
 
