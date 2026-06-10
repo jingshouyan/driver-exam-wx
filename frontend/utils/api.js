@@ -1,7 +1,12 @@
 /**
  * 后端 API 封装
+ *
+ * API 地址在 frontend/config.js 中配置
+ * 本地开发：http://localhost:8080
+ * 云托管部署：改成云托管的访问地址
  */
-const BASE_URL = 'http://localhost:8080/api/v1'
+const CONFIG = require('../config')
+const BASE_URL = CONFIG.apiBaseUrl + '/api/v1'
 
 /** 通用请求 */
 function request(method, path, data) {
