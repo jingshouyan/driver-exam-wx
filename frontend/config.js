@@ -10,7 +10,7 @@
  */
 const CONFIG = {
   // 使用云托管方式（true=callContainer, false=wx.request）
-  useCloud: false,
+  useCloud: true,
 
   // 云托管参数（useCloud=true 时生效）
   cloudEnv: 'prod-d9gwtm8c365502732',   // 环境 ID
