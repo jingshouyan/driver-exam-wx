@@ -35,10 +35,9 @@ Page({
     wx.showLoading({ title: '抽题中...' })
 
     if (!storage.hasCache(subject)) {
-      // 无缓存 → 先拉取全部缓存
-      api.getAllQuestions(subject).then(data => {
-        const questions = (data.questions || []).map(q => ({ ...qutil.normalize(q), marked: false }))
-        storage.saveQuestionCache(subject, questions, '')
+      // 无缓存 → 先分页拉取全部缓存
+      wx.showLoading({ title: '正在更新题库...' })
+      storage.syncAllQuestions(subject, '').then(() => {
         this._startExam(subject)
       }).catch(err => {
         wx.hideLoading()

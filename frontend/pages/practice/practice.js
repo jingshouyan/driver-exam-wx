@@ -42,14 +42,14 @@ Page({
       wx.hideLoading()
     }
 
-    // 后台检查版本，需要更新则重新拉取
+    // 后台检查版本，需要更新则分页拉取
     api.getQuestionsVersion(subject).then(serverVersion => {
       const localVersion = storage.getCacheVersion(subject)
       if (serverVersion === localVersion) return // 已最新
-      return api.getAllQuestions(subject).then(data => {
-        const questions = (data.questions || []).map(q => ({ ...qutil.normalize(q), marked: false }))
-        storage.saveQuestionCache(subject, questions, serverVersion)
-        this.setData({ questions, currentIndex: 0 })
+      wx.showLoading({ title: '正在更新题库...' })
+      return storage.syncAllQuestions(subject, serverVersion).then(questions => {
+        const normalized = questions.map(q => ({ ...qutil.normalize(q), marked: false }))
+        this.setData({ questions: normalized, currentIndex: 0 })
         storage.saveProgress(subject, 0)
       })
     }).catch(err => {
