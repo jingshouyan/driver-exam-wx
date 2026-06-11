@@ -69,15 +69,43 @@ Page({
   /** 上一题 */
   prevQuestion() {
     if (this.data.currentIndex <= 0) return
+    const prevIdx = this.data.currentIndex - 1
+    this._restoreQuestion(prevIdx)
+  },
+
+  /** 根据 answers 恢复题目状态 */
+  _restoreQuestion(index) {
+    const answer = this.data.answers[index] || ''
+    const q = this.data.questions[index]
+    if (!answer || !q) {
+      this.setData({
+        currentIndex: index,
+        selectedOption: '',
+        answered: false,
+        isCorrect: false,
+        optClassA: '',
+        optClassB: '',
+        optClassC: '',
+        optClassD: '',
+      })
+      return
+    }
+    const isCorrect = answer.toUpperCase() === q.answer.toUpperCase()
+    const cls = { optClassA: '', optClassB: '', optClassC: '', optClassD: '' }
+    const opts = ['A', 'B', 'C', 'D']
+    for (const o of opts) {
+      if (answer === o) {
+        cls['optClass' + o] = isCorrect ? 'correct' : 'wrong'
+      } else if (q.answer.toUpperCase() === o && !isCorrect) {
+        cls['optClass' + o] = 'reveal'
+      }
+    }
     this.setData({
-      currentIndex: this.data.currentIndex - 1,
-      selectedOption: this.data.answers[this.data.currentIndex - 1] || '',
-      answered: false,
-      isCorrect: false,
-      optClassA: '',
-      optClassB: '',
-      optClassC: '',
-      optClassD: '',
+      currentIndex: index,
+      selectedOption: answer,
+      answered: true,
+      isCorrect,
+      ...cls,
     })
   },
 
@@ -129,16 +157,7 @@ Page({
       return
     }
 
-    this.setData({
-      currentIndex: nextIndex,
-      selectedOption: this.data.answers[nextIndex] || '',
-      answered: false,
-      isCorrect: false,
-      optClassA: '',
-      optClassB: '',
-      optClassC: '',
-      optClassD: '',
-    })
+    this._restoreQuestion(nextIndex)
   },
 
   /** 交卷 */

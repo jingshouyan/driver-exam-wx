@@ -7,6 +7,7 @@ Page({
     subject: 0,
     questions: [],
     currentIndex: 0,
+    answers: [],   // 每道题选择的选项字母
     answered: false,
     selectedOption: '',
     isCorrect: false,
@@ -65,15 +66,43 @@ Page({
   /** 上一题 */
   prevQuestion() {
     if (this.data.currentIndex <= 0) return
+    const prevIdx = this.data.currentIndex - 1
+    const prevAnswer = this.data.answers[prevIdx] || ''
+    this._restoreQuestion(prevIdx, prevAnswer)
+  },
+
+  /** 根据 answers 恢复题目的答题状态 */
+  _restoreQuestion(index, answer) {
+    const q = this.data.questions[index]
+    if (!answer || !q) {
+      this.setData({
+        currentIndex: index,
+        answered: false,
+        selectedOption: '',
+        isCorrect: false,
+        optClassA: '',
+        optClassB: '',
+        optClassC: '',
+        optClassD: '',
+      })
+      return
+    }
+    const isCorrect = answer.toUpperCase() === q.answer.toUpperCase()
+    const cls = { optClassA: '', optClassB: '', optClassC: '', optClassD: '' }
+    const opts = ['A', 'B', 'C', 'D']
+    for (const o of opts) {
+      if (answer === o) {
+        cls['optClass' + o] = isCorrect ? 'correct' : 'wrong'
+      } else if (q.answer.toUpperCase() === o && !isCorrect) {
+        cls['optClass' + o] = 'reveal'
+      }
+    }
     this.setData({
-      currentIndex: this.data.currentIndex - 1,
-      answered: false,
-      selectedOption: '',
-      isCorrect: false,
-      optClassA: '',
-      optClassB: '',
-      optClassC: '',
-      optClassD: '',
+      currentIndex: index,
+      answered: true,
+      selectedOption: answer,
+      isCorrect,
+      ...cls,
     })
   },
 
@@ -100,10 +129,15 @@ Page({
       }
     }
 
+    // 记录本题答案
+    const answers = this.data.answers
+    answers[this.data.currentIndex] = option
+
     this.setData({
       answered: true,
       selectedOption: option,
       isCorrect,
+      answers,
       ...cls,
     })
 
@@ -126,16 +160,8 @@ Page({
       this.finishPractice()
       return
     }
-    this.setData({
-      currentIndex: nextIndex,
-      answered: false,
-      selectedOption: '',
-      isCorrect: false,
-      optClassA: '',
-      optClassB: '',
-      optClassC: '',
-      optClassD: '',
-    })
+    const nextAnswer = this.data.answers[nextIndex] || ''
+    this._restoreQuestion(nextIndex, nextAnswer)
   },
 
   /** 完成练习 */
