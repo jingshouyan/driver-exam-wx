@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"driver-exam-wx/internal/model"
 
 	"gorm.io/gorm"
@@ -25,6 +27,12 @@ type ListQuestionsResult struct {
 	Page     int               `json:"page"`
 	Size     int               `json:"size"`
 	Questions []model.Question `json:"list"`
+}
+
+func (s *QuestionService) GetVersion(subject int) (time.Time, error) {
+	var t time.Time
+	err := s.db.Model(&model.Question{}).Where("subject = ?", subject).Select("MAX(updated_at)").Scan(&t).Error
+	return t, err
 }
 
 func (s *QuestionService) ListQuestions(params ListQuestionsParams) (*ListQuestionsResult, error) {

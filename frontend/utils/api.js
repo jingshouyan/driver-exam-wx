@@ -146,6 +146,16 @@ function refreshToken() {
   })
 }
 
+/** 获取题目版本时间戳 */
+function getQuestionsVersion(subject) {
+  return request('GET', `/questions/version?subject=${subject}`)
+}
+
+/** 获取全部题目（用于本地缓存，最多 2000 题） */
+function getAllQuestions(subject) {
+  return request('GET', `/questions?subject=${subject}&page=1&size=2000`)
+}
+
 /** 微信登录 */
 function login(code) {
   return request('POST', '/auth/login', { code })
@@ -159,4 +169,6 @@ function getQuestions(subject, page = 1, size = 100) {
 module.exports = {
   login,
   getQuestions,
+  getQuestionsVersion,
+  getAllQuestions,
 }

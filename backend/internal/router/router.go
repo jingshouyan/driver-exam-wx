@@ -30,6 +30,7 @@ func Setup(
 
 		// 题目列表（游客可访问）
 		api.GET("/questions", questionHandler.ListQuestions)
+		api.GET("/questions/version", questionHandler.GetVersion)
 
 		// 需要登录的操作
 		api.Use(authMiddleware.Handle())

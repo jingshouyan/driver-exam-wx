@@ -62,10 +62,61 @@ function clearWrongBySubject(subject) {
   wx.setStorageSync(WRONG_KEY, list)
 }
 
+// ── 题目缓存 ──
+
+function cacheKey(subject) {
+  return 'cached_questions_' + subject
+}
+
+function versionKey(subject) {
+  return 'cache_version_' + subject
+}
+
+/** 保存题目缓存 */
+function saveQuestionCache(subject, questions, version) {
+  wx.setStorageSync(cacheKey(subject), questions)
+  wx.setStorageSync(versionKey(subject), version)
+}
+
+/** 读取题目缓存 */
+function getQuestionCache(subject) {
+  return wx.getStorageSync(cacheKey(subject)) || []
+}
+
+/** 读取缓存版本号 */
+function getCacheVersion(subject) {
+  return wx.getStorageSync(versionKey(subject)) || ''
+}
+
+/** 缓存是否有效 */
+function hasCache(subject) {
+  const q = wx.getStorageSync(cacheKey(subject))
+  return Array.isArray(q) && q.length > 0
+}
+
+// ── 练习进度 ──
+
+const PROGRESS_KEY = 'practice_progress'
+
+function saveProgress(subject, index) {
+  wx.setStorageSync(PROGRESS_KEY + '_' + subject, index)
+}
+
+function getProgress(subject) {
+  const idx = wx.getStorageSync(PROGRESS_KEY + '_' + subject)
+  return typeof idx === 'number' ? idx : 0
+}
+
 module.exports = {
   getWrongQuestions,
   addWrongQuestion,
   removeWrongQuestion,
   toggleMark,
   clearWrongBySubject,
+  saveQuestionCache,
+  getQuestionCache,
+  getCacheVersion,
+  hasCache,
+  saveProgress,
+  getProgress,
 }

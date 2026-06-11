@@ -29,20 +29,34 @@ Page({
     this.loadQuestions(subject)
   },
 
-  /** 加载题目 */
+  /** 加载题目：优先缓存，后台检查版本 */
   loadQuestions(subject) {
     wx.showLoading({ title: '加载中...' })
-    api.getQuestions(subject, 1, 100)
-      .then(data => {
+
+    // 从缓存加载
+    if (storage.hasCache(subject)) {
+      const cached = storage.getQuestionCache(subject).map(q => ({ ...qutil.normalize(q), marked: false }))
+      const savedIdx = storage.getProgress(subject)
+      const startIdx = savedIdx < cached.length ? savedIdx : 0
+      this.setData({ questions: cached, currentIndex: startIdx })
+      wx.hideLoading()
+    }
+
+    // 后台检查版本，需要更新则重新拉取
+    api.getQuestionsVersion(subject).then(serverVersion => {
+      const localVersion = storage.getCacheVersion(subject)
+      if (serverVersion === localVersion) return // 已最新
+      return api.getAllQuestions(subject).then(data => {
         const questions = (data.questions || []).map(q => ({ ...qutil.normalize(q), marked: false }))
-        this.setData({ questions })
-        wx.hideLoading()
+        storage.saveQuestionCache(subject, questions, serverVersion)
+        this.setData({ questions, currentIndex: 0 })
+        storage.saveProgress(subject, 0)
       })
-      .catch(err => {
-        wx.hideLoading()
-        wx.showToast({ title: '加载失败', icon: 'none' })
-        console.error(err)
-      })
+    }).catch(err => {
+      console.error('sync error:', err)
+    }).finally(() => {
+      wx.hideLoading()
+    })
   },
 
   /** 触摸开始（记录起点，用于滑动） */
@@ -156,6 +170,7 @@ Page({
   /** 下一题 */
   nextQuestion() {
     const nextIndex = this.data.currentIndex + 1
+    storage.saveProgress(this.data.subject, nextIndex)
     if (nextIndex >= this.data.questions.length) {
       this.finishPractice()
       return

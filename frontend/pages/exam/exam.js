@@ -30,23 +30,48 @@ Page({
     this.loadQuestions(subject)
   },
 
-  /** 加载题目 */
+  /** 加载题目：从缓存随机抽 100 题 */
   loadQuestions(subject) {
-    wx.showLoading({ title: '加载中...' })
-    api.getQuestions(subject, 1, 100)
-      .then(data => {
+    wx.showLoading({ title: '抽题中...' })
+
+    if (!storage.hasCache(subject)) {
+      // 无缓存 → 先拉取全部缓存
+      api.getAllQuestions(subject).then(data => {
         const questions = (data.questions || []).map(q => ({ ...qutil.normalize(q), marked: false }))
-        this.setData({ 
-          questions,
-          answers: new Array(questions.length).fill(''),
-        })
-        wx.hideLoading()
-      })
-      .catch(err => {
+        storage.saveQuestionCache(subject, questions, '')
+        this._startExam(subject)
+      }).catch(err => {
         wx.hideLoading()
         wx.showToast({ title: '加载失败', icon: 'none' })
         console.error(err)
       })
+    } else {
+      this._startExam(subject)
+    }
+  },
+
+  /** 从缓存中随机抽题 */
+  _startExam(subject) {
+    const all = storage.getQuestionCache(subject).map(q => ({ ...qutil.normalize(q), marked: false }))
+    // 随机打乱并取前 100 题
+    const shuffled = this._shuffle(all)
+    const examSize = Math.min(100, shuffled.length)
+    const questions = shuffled.slice(0, examSize)
+    this.setData({
+      questions,
+      answers: new Array(questions.length).fill(''),
+    })
+    wx.hideLoading()
+  },
+
+  /** Fisher-Yates 洗牌 */
+  _shuffle(arr) {
+    const a = [...arr]
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[a[i], a[j]] = [a[j], a[i]]
+    }
+    return a
   },
 
   /** 触摸开始 */
