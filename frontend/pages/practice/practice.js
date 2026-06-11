@@ -15,6 +15,10 @@ Page({
     correctCount: 0,
     correctRate: 0,
     wrongList: [],
+    optClassA: '',
+    optClassB: '',
+    optClassC: '',
+    optClassD: '',
   },
 
   onLoad(options) {
@@ -39,21 +43,6 @@ Page({
       })
   },
 
-  /** 获取选项样式 */
-  getOptionClass(item, opt) {
-    if (!this.data.answered) {
-      return this.data.selectedOption === opt ? 'selected' : ''
-    }
-    const isCorrectOpt = item.answer.toUpperCase() === opt.toUpperCase()
-    if (this.data.selectedOption === opt) {
-      return this.data.isCorrect ? 'correct' : 'wrong'
-    }
-    if (isCorrectOpt && !this.data.isCorrect) {
-      return 'reveal'
-    }
-    return ''
-  },
-
   /** 选择选项（手动点击） */
   selectOption(e) {
     if (this.data.answered) return
@@ -66,10 +55,22 @@ Page({
     const question = this.data.questions[this.data.currentIndex]
     const isCorrect = option.toUpperCase() === question.answer.toUpperCase()
 
+    // 直接计算每个选项的 class，避免 WXML 函数调用问题
+    const cls = { optClassA: '', optClassB: '', optClassC: '', optClassD: '' }
+    const opts = ['A', 'B', 'C', 'D']
+    for (const o of opts) {
+      if (option === o) {
+        cls['optClass' + o] = isCorrect ? 'correct' : 'wrong'
+      } else if (question.answer.toUpperCase() === o && !isCorrect) {
+        cls['optClass' + o] = 'reveal'
+      }
+    }
+
     this.setData({
       answered: true,
       selectedOption: option,
       isCorrect,
+      ...cls,
     })
 
     if (!isCorrect) {
@@ -93,6 +94,10 @@ Page({
       answered: false,
       selectedOption: '',
       isCorrect: false,
+      optClassA: '',
+      optClassB: '',
+      optClassC: '',
+      optClassD: '',
     })
   },
 

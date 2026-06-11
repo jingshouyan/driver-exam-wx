@@ -10,6 +10,10 @@ Page({
     selectedOption: '',
     answers: [],
 
+    optClassA: '',
+    optClassB: '',
+    optClassC: '',
+    optClassD: '',
     submitted: false,
     answered: false,
     isCorrect: false,
@@ -44,27 +48,23 @@ Page({
       })
   },
 
-  /** 选项样式：选择了、正确、错误、正确答案揭示 */
-  getOptionClass(item, opt) {
-    if (this.data.answered) {
-      const isCorrectOpt = item.answer && item.answer.toUpperCase() === opt.toUpperCase()
-      if (this.data.selectedOption === opt) {
-        return this.data.isCorrect ? 'correct' : 'wrong'
-      }
-      if (isCorrectOpt && !this.data.isCorrect) {
-        return 'reveal'
-      }
-      return ''
-    }
-    return this.data.selectedOption === opt ? 'selected' : ''
-  },
-
   /** 选择选项 */
   selectOption(e) {
     if (this.data.answered) return
     const option = e.currentTarget.dataset.option
     const question = this.data.questions[this.data.currentIndex]
     const isCorrect = option.toUpperCase() === question.answer.toUpperCase()
+
+    // 直接计算每个选项的 class
+    const cls = { optClassA: '', optClassB: '', optClassC: '', optClassD: '' }
+    const opts = ['A', 'B', 'C', 'D']
+    for (const o of opts) {
+      if (option === o) {
+        cls['optClass' + o] = isCorrect ? 'correct' : 'wrong'
+      } else if (question.answer.toUpperCase() === o && !isCorrect) {
+        cls['optClass' + o] = 'reveal'
+      }
+    }
 
     const answers = this.data.answers
     answers[this.data.currentIndex] = option
@@ -73,6 +73,7 @@ Page({
       answers,
       answered: true,
       isCorrect,
+      ...cls,
     })
   },
 
@@ -100,6 +101,10 @@ Page({
       selectedOption: this.data.answers[nextIndex] || '',
       answered: false,
       isCorrect: false,
+      optClassA: '',
+      optClassB: '',
+      optClassC: '',
+      optClassD: '',
     })
   },
 
