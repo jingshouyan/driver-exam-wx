@@ -97,7 +97,6 @@ function hasCache(subject) {
 // ── 分页同步 ──
 
 const api = require('./api')
-const qutil = require('./question')
 
 /** 分页拉取全部题目并缓存，每页 100 条 */
 function syncAllQuestions(subject, serverVersion) {
