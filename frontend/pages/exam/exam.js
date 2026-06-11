@@ -60,9 +60,9 @@ Page({
     const diff = e.changedTouches[0].clientX - this.data.touchStartX
     if (Math.abs(diff) < 50) return
     if (diff < 0) {
-      this.prevQuestion()
-    } else {
       this.nextQuestion()
+    } else {
+      this.prevQuestion()
     }
   },
 

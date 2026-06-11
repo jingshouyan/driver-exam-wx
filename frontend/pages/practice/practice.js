@@ -54,11 +54,11 @@ Page({
     const diff = e.changedTouches[0].clientX - this.data.touchStartX
     if (Math.abs(diff) < 50) return // 小于 50px 忽略
     if (diff < 0) {
-      // 左滑 → 上一题
-      this.prevQuestion()
-    } else {
-      // 右滑 → 下一题
+      // 左滑 → 下一题
       this.nextQuestion()
+    } else {
+      // 右滑 → 上一题
+      this.prevQuestion()
     }
   },
 
