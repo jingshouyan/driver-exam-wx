@@ -10,6 +10,7 @@ import (
 func Setup(
 	authHandler *handler.AuthHandler,
 	questionHandler *handler.QuestionHandler,
+	imageHandler *handler.ImageHandler,
 	authMiddleware *middleware.AuthMiddleware,
 ) *gin.Engine {
 	r := gin.Default()
@@ -28,9 +29,11 @@ func Setup(
 			auth.POST("/refresh", authHandler.RefreshToken)
 		}
 
-		// 题目列表（游客可访问）
+		// 题目 & 图片（游客可访问）
 		api.GET("/questions", questionHandler.ListQuestions)
 		api.GET("/questions/version", questionHandler.GetVersion)
+		api.GET("/images/by-url", imageHandler.GetByURL)
+api.GET("/images/:md5", imageHandler.GetByMD5)
 
 		// 需要登录的操作
 		api.Use(authMiddleware.Handle())

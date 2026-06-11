@@ -94,7 +94,8 @@ func main() {
 	slog.Info("定时同步已注册", "cron", cfg.Sync.Cron)
 
 	// Router
-	r := router.Setup(authHandler, questionHandler, authMiddleware)
+	imageHandler := handler.NewImageHandler(service.NewImageService(db))
+	r := router.Setup(authHandler, questionHandler, imageHandler, authMiddleware)
 
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	slog.Info("服务启动", "addr", addr)

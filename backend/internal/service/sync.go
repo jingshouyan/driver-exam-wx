@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"crypto/md5"
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
@@ -89,6 +90,10 @@ func (s *SyncService) SyncAll() error {
 				})
 				return fmt.Errorf(msg)
 			}
+			// 图片按 URL MD5 去重存入独立表
+			if item.Pic != "" {
+				s.saveImage(context.Background(), item.Pic)
+			}
 			totalUpserted++
 		}
 	}
@@ -153,15 +158,6 @@ func (s *SyncService) upsertQuestion(q *model.Question) error {
 
 // convertToQuestion 将极速数据 API 题目转换为本地 Question 模型
 func convertToQuestion(item jisuapi.QuestionItem, subject int) model.Question {
-	pic := ""
-	if item.Pic != "" {
-		if b64, err := downloadImageAsBase64(item.Pic); err == nil {
-			pic = b64
-		} else {
-			slog.Warn("图片下载失败", "url", item.Pic, "error", err)
-		}
-	}
-
 	q := model.Question{
 		Subject:  subject,
 		Question: item.Question,
@@ -171,7 +167,7 @@ func convertToQuestion(item jisuapi.QuestionItem, subject int) model.Question {
 		Option4:  cleanOption(item.Option4),
 		Answer:   item.Answer,
 		Explain:  item.Explain,
-		Pic:      pic,
+		Pic:      item.Pic, // 原始图片 URL
 	}
 
 	// 判断题：API 选项为空，则生成 A=对 B=错，answer 转 A/B
@@ -189,6 +185,32 @@ func convertToQuestion(item jisuapi.QuestionItem, subject int) model.Question {
 	// 计算 content_hash（基于标准化后的数据）
 	q.ContentHash = computeContentHash(&q)
 	return q
+}
+
+// md5Hash 计算字符串的 MD5 哈希
+func md5Hash(s string) string {
+	return fmt.Sprintf("%x", md5.Sum([]byte(s)))
+}
+
+// saveImage 按 URL MD5 去重下载并缓存图片
+func (s *SyncService) saveImage(ctx context.Context, url string) {
+	h := md5Hash(url)
+	var count int64
+	s.db.Model(&model.Image{}).Where("url_md5 = ?", h).Count(&count)
+	if count > 0 {
+		return // 已存在
+	}
+
+	data, err := downloadImageAsBase64(url)
+	if err != nil {
+		slog.Warn("图片下载失败", "url", url, "error", err)
+		return
+	}
+
+	img := model.Image{URLMD5: h, URL: url, Data: data}
+	if err := s.db.Create(&img).Error; err != nil {
+		slog.Warn("图片保存失败", "url", url, "error", err)
+	}
 }
 
 // downloadImageAsBase64 下载图片并转换为 base64 字符串

@@ -39,6 +39,7 @@ Page({
       const savedIdx = storage.getProgress(subject)
       const startIdx = savedIdx < cached.length ? savedIdx : 0
       this.setData({ questions: cached, currentIndex: startIdx })
+      this._loadCurrentPic()
       wx.hideLoading()
     }
 
@@ -51,6 +52,7 @@ Page({
         const normalized = questions.map(q => ({ ...qutil.normalize(q), marked: false }))
         this.setData({ questions: normalized, currentIndex: 0 })
         storage.saveProgress(subject, 0)
+        this._loadCurrentPic()
       })
     }).catch(err => {
       console.error('sync error:', err)
@@ -85,6 +87,21 @@ Page({
     this._restoreQuestion(prevIdx, prevAnswer)
   },
 
+  /** 懒加载当前题目的图片 */
+  _loadCurrentPic() {
+    const q = this.data.questions[this.data.currentIndex]
+    if (!q || !q.pic) return
+    const cached = storage.getPicCache(q.pic)
+    if (cached) {
+      this.setData({ [`questions[${this.data.currentIndex}].picData`]: cached })
+      return
+    }
+    api.getPicByURL(q.pic).then(data => {
+      storage.savePicCache(q.pic, data)
+      this.setData({ [`questions[${this.data.currentIndex}].picData`]: data })
+    }).catch(() => {})
+  },
+
   /** 根据 answers 恢复题目的答题状态 */
   _restoreQuestion(index, answer) {
     const q = this.data.questions[index]
@@ -99,6 +116,7 @@ Page({
         optClassC: '',
         optClassD: '',
       })
+      this._loadCurrentPic()
       return
     }
     const isCorrect = answer.toUpperCase() === q.answer.toUpperCase()
@@ -118,6 +136,7 @@ Page({
       isCorrect,
       ...cls,
     })
+    this._loadCurrentPic()
   },
 
   /** 选择选项（手动点击） */

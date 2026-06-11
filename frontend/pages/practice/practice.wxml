@@ -16,7 +16,7 @@
       <view class="card question-card">
         <view class="q-label">第 {{currentIndex + 1}} 题</view>
         <view class="q-text">{{item.question}}</view>
-        <image class="q-pic" wx:if="{{item.pic}}" src="{{item.pic}}" mode="widthFix"></image>
+        <image class="q-pic" wx:if="{{item.pic}}" src="{{item.picData || ''}}" mode="widthFix"></image>
       </view>
 
       <!-- 选项 -->

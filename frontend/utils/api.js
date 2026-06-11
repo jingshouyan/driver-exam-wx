@@ -166,6 +166,11 @@ function login(code) {
   return request('POST', '/auth/login', { code })
 }
 
+/** 按图片 URL 获取 base64 数据 */
+function getPicByURL(picUrl) {
+  return request('GET', '/images/by-url?url=' + encodeURIComponent(picUrl))
+}
+
 /** 获取题目列表 */
 function getQuestions(subject, page = 1, size = 100) {
   return request('GET', `/questions?subject=${subject}&page=${page}&size=${size}`)
@@ -176,4 +181,5 @@ module.exports = {
   getQuestions,
   getQuestionsVersion,
   getAllQuestions,
+  getPicByURL,
 }

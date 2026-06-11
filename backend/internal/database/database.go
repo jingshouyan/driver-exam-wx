@@ -64,6 +64,7 @@ func Init(cfg *config.Config) (*gorm.DB, error) {
 	if err := db.AutoMigrate(
 		&model.User{},
 		&model.Question{},
+		&model.Image{},
 		&model.SyncRecord{},
 	); err != nil {
 		return nil, fmt.Errorf("auto migrate: %w", err)

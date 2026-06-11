@@ -159,6 +159,20 @@ function getProgress(subject) {
   return typeof idx === 'number' ? idx : 0
 }
 
+// ── 图片缓存 ──
+
+function picCacheKey(url) {
+  return 'pic_' + url
+}
+
+function savePicCache(url, data) {
+  wx.setStorageSync(picCacheKey(url), data)
+}
+
+function getPicCache(url) {
+  return wx.getStorageSync(picCacheKey(url)) || null
+}
+
 module.exports = {
   getWrongQuestions,
   addWrongQuestion,
@@ -172,4 +186,6 @@ module.exports = {
   saveProgress,
   getProgress,
   syncAllQuestions,
+  savePicCache,
+  getPicCache,
 }

@@ -39,6 +39,7 @@ Page({
       wx.showLoading({ title: '正在更新题库...' })
       storage.syncAllQuestions(subject, '').then(() => {
         this._startExam(subject)
+        this._loadCurrentPic()
       }).catch(err => {
         wx.hideLoading()
         wx.showToast({ title: '加载失败', icon: 'none' })
@@ -47,6 +48,21 @@ Page({
     } else {
       this._startExam(subject)
     }
+  },
+
+  /** 懒加载当前题目的图片 */
+  _loadCurrentPic() {
+    const q = this.data.questions[this.data.currentIndex]
+    if (!q || !q.pic) return
+    const cached = storage.getPicCache(q.pic)
+    if (cached) {
+      this.setData({ [`questions[${this.data.currentIndex}].picData`]: cached })
+      return
+    }
+    api.getPicByURL(q.pic).then(data => {
+      storage.savePicCache(q.pic, data)
+      this.setData({ [`questions[${this.data.currentIndex}].picData`]: data })
+    }).catch(() => {})
   },
 
   /** 从缓存中随机抽题 */
@@ -60,6 +76,7 @@ Page({
       questions,
       answers: new Array(questions.length).fill(''),
     })
+    this._loadCurrentPic()
     wx.hideLoading()
   },
 
@@ -112,6 +129,7 @@ Page({
         optClassC: '',
         optClassD: '',
       })
+      this._loadCurrentPic()
       return
     }
     const isCorrect = answer.toUpperCase() === q.answer.toUpperCase()
@@ -131,6 +149,7 @@ Page({
       isCorrect,
       ...cls,
     })
+    this._loadCurrentPic()
   },
 
   /** 选择选项 */
