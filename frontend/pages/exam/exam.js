@@ -196,6 +196,7 @@ Page({
         correctCount++
       } else {
         wrongList.push({ ...q, userAnswer })
+      }
     })
 
     const total = this.data.questions.length
