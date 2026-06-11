@@ -71,6 +71,34 @@
       </view>
       <text class="complete-rate">正确率 {{correctRate}}%</text>
     </view>
+
+    <!-- 错题回顾 -->
+    <view class="wrong-list" wx:if="{{wrongList.length > 0}}">
+      <text class="section-title">答错回顾（{{wrongList.length}} 题）</text>
+      <view class="wrong-item" wx:for="{{wrongList}}" wx:key="id">
+        <text class="wrong-q">{{item.question}}</text>
+        <view class="wrong-opts">
+          <view class="option {{wrongOptClass(item, 'A')}}" wx:if="{{item.option1}}">
+            <text class="option-label">A</text>
+            <text class="option-text">{{item.option1}}</text>
+          </view>
+          <view class="option {{wrongOptClass(item, 'B')}}" wx:if="{{item.option2}}">
+            <text class="option-label">B</text>
+            <text class="option-text">{{item.option2}}</text>
+          </view>
+          <view class="option {{wrongOptClass(item, 'C')}}" wx:if="{{item.option3}}">
+            <text class="option-label">C</text>
+            <text class="option-text">{{item.option3}}</text>
+          </view>
+          <view class="option {{wrongOptClass(item, 'D')}}" wx:if="{{item.option4}}">
+            <text class="option-label">D</text>
+            <text class="option-text">{{item.option4}}</text>
+          </view>
+        </view>
+        <text class="wrong-answer">正确答案：{{item.answerText}}</text>
+      </view>
+    </view>
+
     <view class="action-btn primary" bindtap="goHome">返回首页</view>
   </view>
 

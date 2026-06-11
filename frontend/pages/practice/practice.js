@@ -14,6 +14,7 @@ Page({
     isComplete: false,
     correctCount: 0,
     correctRate: 0,
+    wrongList: [],
   },
 
   onLoad(options) {
@@ -73,6 +74,10 @@ Page({
 
     if (!isCorrect) {
       storage.addWrongQuestion(question)
+      // 记录到本局错题列表，用于完成页展示
+      const wrongList = this.data.wrongList
+      wrongList.push({ ...question, userAnswer: option })
+      this.setData({ wrongList })
     }
   },
 
@@ -116,6 +121,15 @@ Page({
     q.marked = !q.marked
     storage.toggleMark(q.id)
     this.setData({ questions: this.data.questions })
+  },
+
+  /** 完成页错题选项样式 */
+  wrongOptClass(item, opt) {
+    const isUserAnswer = item.userAnswer === opt
+    const isCorrectOpt = item.answer.toUpperCase() === opt.toUpperCase()
+    if (isUserAnswer) return isCorrectOpt ? 'correct' : 'wrong'
+    if (isCorrectOpt) return 'reveal'
+    return ''
   },
 
   /** 返回首页 */
