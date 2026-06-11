@@ -11,6 +11,8 @@ Page({
     answers: [],
 
     submitted: false,
+    answered: false,
+    isCorrect: false,
     score: 0,
     correctCount: 0,
     wrongCount: 0,
@@ -44,13 +46,14 @@ Page({
 
   /** 选项样式：选择了、正确、错误、正确答案揭示 */
   getOptionClass(item, opt) {
-    if (this.data.submitted) {
-      // 交卷后显示对错
+    if (this.data.answered) {
       const isCorrectOpt = item.answer && item.answer.toUpperCase() === opt.toUpperCase()
-      if (this.data.answers[this.data.currentIndex] === opt) {
-        return isCorrectOpt ? 'correct' : 'wrong'
+      if (this.data.selectedOption === opt) {
+        return this.data.isCorrect ? 'correct' : 'wrong'
       }
-      if (isCorrectOpt) return 'reveal'
+      if (isCorrectOpt && !this.data.isCorrect) {
+        return 'reveal'
+      }
       return ''
     }
     return this.data.selectedOption === opt ? 'selected' : ''
@@ -58,10 +61,19 @@ Page({
 
   /** 选择选项 */
   selectOption(e) {
+    if (this.data.answered) return
     const option = e.currentTarget.dataset.option
+    const question = this.data.questions[this.data.currentIndex]
+    const isCorrect = option.toUpperCase() === question.answer.toUpperCase()
+
     const answers = this.data.answers
     answers[this.data.currentIndex] = option
-    this.setData({ selectedOption: option, answers })
+    this.setData({
+      selectedOption: option,
+      answers,
+      answered: true,
+      isCorrect,
+    })
   },
 
   /** 下一题或交卷 */
@@ -72,11 +84,9 @@ Page({
       return
     }
 
-    // 检查答案，记录错题
-    const question = this.data.questions[this.data.currentIndex]
-    const isCorrect = this.data.selectedOption.toUpperCase() === question.answer.toUpperCase()
-    if (!isCorrect) {
-      storage.addWrongQuestion(question)
+    // 记录错题（selectOption 已设定 isCorrect）
+    if (!this.data.isCorrect) {
+      storage.addWrongQuestion(this.data.questions[this.data.currentIndex])
     }
 
     const nextIndex = this.data.currentIndex + 1
@@ -88,6 +98,8 @@ Page({
     this.setData({
       currentIndex: nextIndex,
       selectedOption: this.data.answers[nextIndex] || '',
+      answered: false,
+      isCorrect: false,
     })
   },
 
