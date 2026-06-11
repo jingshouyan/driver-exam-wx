@@ -79,6 +79,22 @@
   background-color: #fff8f0;
 }
 
+.option.correct {
+  border-color: #07c160;
+  background-color: #f0fff5;
+}
+
+.option.wrong {
+  border-color: #ee0a24;
+  background-color: #fff0f0;
+}
+
+.option.reveal {
+  border-color: #07c160;
+  background-color: #f0fff5;
+  opacity: 0.8;
+}
+
 .option-label {
   width: 28px;
   height: 28px;
@@ -95,6 +111,17 @@
 
 .option.selected .option-label {
   background-color: #ff6a00;
+  color: #fff;
+}
+
+.option.correct .option-label,
+.option.reveal .option-label {
+  background-color: #07c160;
+  color: #fff;
+}
+
+.option.wrong .option-label {
+  background-color: #ee0a24;
   color: #fff;
 }
 

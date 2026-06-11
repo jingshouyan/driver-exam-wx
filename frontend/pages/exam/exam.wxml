@@ -20,21 +20,21 @@
         <image class="q-pic" wx:if="{{item.pic}}" src="{{item.pic}}" mode="widthFix"></image>
       </view>
 
-      <!-- 选项（考试模式不显示对错） -->
+      <!-- 选项 -->
       <view class="options">
-        <view class="option {{selectedOption === 'A' ? 'selected' : ''}}" bindtap="selectOption" data-option="A" wx:if="{{item.option1}}">
+        <view class="option {{getOptionClass(item, 'A')}}" bindtap="selectOption" data-option="A" wx:if="{{item.option1}}">
           <text class="option-label">A</text>
           <text class="option-text">{{item.option1}}</text>
         </view>
-        <view class="option {{selectedOption === 'B' ? 'selected' : ''}}" bindtap="selectOption" data-option="B" wx:if="{{item.option2}}">
+        <view class="option {{getOptionClass(item, 'B')}}" bindtap="selectOption" data-option="B" wx:if="{{item.option2}}">
           <text class="option-label">B</text>
           <text class="option-text">{{item.option2}}</text>
         </view>
-        <view class="option {{selectedOption === 'C' ? 'selected' : ''}}" bindtap="selectOption" data-option="C" wx:if="{{item.option3}}">
+        <view class="option {{getOptionClass(item, 'C')}}" bindtap="selectOption" data-option="C" wx:if="{{item.option3}}">
           <text class="option-label">C</text>
           <text class="option-text">{{item.option3}}</text>
         </view>
-        <view class="option {{selectedOption === 'D' ? 'selected' : ''}}" bindtap="selectOption" data-option="D" wx:if="{{item.option4}}">
+        <view class="option {{getOptionClass(item, 'D')}}" bindtap="selectOption" data-option="D" wx:if="{{item.option4}}">
           <text class="option-label">D</text>
           <text class="option-text">{{item.option4}}</text>
         </view>

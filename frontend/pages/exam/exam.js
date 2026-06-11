@@ -42,6 +42,20 @@ Page({
       })
   },
 
+  /** 选项样式：选择了、正确、错误、正确答案揭示 */
+  getOptionClass(item, opt) {
+    if (this.data.submitted) {
+      // 交卷后显示对错
+      const isCorrectOpt = item.answer && item.answer.toUpperCase() === opt.toUpperCase()
+      if (this.data.answers[this.data.currentIndex] === opt) {
+        return isCorrectOpt ? 'correct' : 'wrong'
+      }
+      if (isCorrectOpt) return 'reveal'
+      return ''
+    }
+    return this.data.selectedOption === opt ? 'selected' : ''
+  },
+
   /** 选择选项 */
   selectOption(e) {
     const option = e.currentTarget.dataset.option
