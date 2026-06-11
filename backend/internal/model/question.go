@@ -19,7 +19,7 @@ type Question struct {
 	Option4     string         `gorm:"column:option4;type:text" json:"option4"`
 	Answer      string         `gorm:"column:answer;type:varchar(16)" json:"answer"`
 	Explain     string         `gorm:"column:explain;type:text" json:"explain"`
-	Pic         string         `gorm:"column:pic;type:varchar(512)" json:"pic"`
+	Pic         string         `gorm:"column:pic;type:longtext" json:"pic"`
 	Sort        string         `gorm:"column:sort;type:varchar(16)" json:"sort"`
 	CreatedAt   time.Time      `gorm:"column:created_at" json:"-"`
 	UpdatedAt   time.Time      `gorm:"column:updated_at" json:"-"`

@@ -1,10 +1,14 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
+	"io"
 	"log/slog"
+	"net/http"
 	"strings"
 	"time"
 
@@ -150,6 +154,15 @@ func (s *SyncService) upsertQuestion(q *model.Question) error {
 
 // convertToQuestion 将极速数据 API 题目转换为本地 Question 模型
 func convertToQuestion(item jisuapi.QuestionItem, subject int) model.Question {
+	pic := ""
+	if item.Pic != "" {
+		if b64, err := downloadImageAsBase64(item.Pic); err == nil {
+			pic = b64
+		} else {
+			slog.Warn("图片下载失败", "url", item.Pic, "error", err)
+		}
+	}
+
 	q := model.Question{
 		Subject:  subject,
 		Question: item.Question,
@@ -159,7 +172,7 @@ func convertToQuestion(item jisuapi.QuestionItem, subject int) model.Question {
 		Option4:  cleanOption(item.Option4),
 		Answer:   item.Answer,
 		Explain:  item.Explain,
-		Pic:      item.Pic,
+		Pic:      pic,
 	}
 
 	// 判断题：API 选项为空，则生成 A=对 B=错，answer 转 A/B
@@ -177,6 +190,25 @@ func convertToQuestion(item jisuapi.QuestionItem, subject int) model.Question {
 	// 计算 content_hash（基于标准化后的数据）
 	q.ContentHash = computeContentHash(&q)
 	return q
+}
+
+// downloadImageAsBase64 下载图片并转换为 base64 字符串
+func downloadImageAsBase64(url string) (string, error) {
+	cli := &http.Client{Timeout: 15 * time.Second}
+	resp, err := cli.Get(url)
+	if err != nil {
+		return "", fmt.Errorf("get: %w", err)
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("read: %w", err)
+	}
+
+	mime := http.DetectContentType(data)
+	b64 := base64.StdEncoding.EncodeToString(data)
+	return "data:" + mime + ";base64," + b64, nil
 }
 
 // cleanOption 去掉选项前缀 "A、"，如 "A、工作证" → "工作证"
