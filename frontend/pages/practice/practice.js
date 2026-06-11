@@ -11,6 +11,7 @@ Page({
     selectedOption: '',
     isCorrect: false,
 
+    touchStartX: 0,
     isComplete: false,
     correctCount: 0,
     correctRate: 0,
@@ -41,6 +42,39 @@ Page({
         wx.showToast({ title: '加载失败', icon: 'none' })
         console.error(err)
       })
+  },
+
+  /** 触摸开始（记录起点，用于滑动） */
+  handleTouchStart(e) {
+    this.setData({ touchStartX: e.touches[0].clientX })
+  },
+
+  /** 触摸结束（判断左滑/右滑） */
+  handleTouchEnd(e) {
+    const diff = e.changedTouches[0].clientX - this.data.touchStartX
+    if (Math.abs(diff) < 50) return // 小于 50px 忽略
+    if (diff < 0) {
+      // 左滑 → 上一题
+      this.prevQuestion()
+    } else {
+      // 右滑 → 下一题
+      this.nextQuestion()
+    }
+  },
+
+  /** 上一题 */
+  prevQuestion() {
+    if (this.data.currentIndex <= 0) return
+    this.setData({
+      currentIndex: this.data.currentIndex - 1,
+      answered: false,
+      selectedOption: '',
+      isCorrect: false,
+      optClassA: '',
+      optClassB: '',
+      optClassC: '',
+      optClassD: '',
+    })
   },
 
   /** 选择选项（手动点击） */
@@ -79,6 +113,9 @@ Page({
       const wrongList = this.data.wrongList
       wrongList.push({ ...question, userAnswer: option })
       this.setData({ wrongList })
+    } else {
+      // 答对后延迟自动进入下一题
+      setTimeout(() => this.nextQuestion(), 600)
     }
   },
 

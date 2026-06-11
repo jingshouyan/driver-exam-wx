@@ -9,6 +9,7 @@ Page({
     currentIndex: 0,
     selectedOption: '',
     answers: [],
+    touchStartX: 0,
 
     optClassA: '',
     optClassB: '',
@@ -46,6 +47,38 @@ Page({
         wx.showToast({ title: '加载失败', icon: 'none' })
         console.error(err)
       })
+  },
+
+  /** 触摸开始 */
+  handleTouchStart(e) {
+    this.setData({ touchStartX: e.touches[0].clientX })
+  },
+
+  /** 触摸结束 */
+  handleTouchEnd(e) {
+    if (this.data.submitted) return
+    const diff = e.changedTouches[0].clientX - this.data.touchStartX
+    if (Math.abs(diff) < 50) return
+    if (diff < 0) {
+      this.prevQuestion()
+    } else {
+      this.nextQuestion()
+    }
+  },
+
+  /** 上一题 */
+  prevQuestion() {
+    if (this.data.currentIndex <= 0) return
+    this.setData({
+      currentIndex: this.data.currentIndex - 1,
+      selectedOption: this.data.answers[this.data.currentIndex - 1] || '',
+      answered: false,
+      isCorrect: false,
+      optClassA: '',
+      optClassB: '',
+      optClassC: '',
+      optClassD: '',
+    })
   },
 
   /** 选择选项 */
