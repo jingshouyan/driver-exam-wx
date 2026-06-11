@@ -258,5 +258,24 @@
   display: block;
   font-size: 13px;
   color: #07c160;
+  margin-top: 6px;
+}
+
+.wrong-opts {
+  margin-top: 8px;
+}
+
+.wrong-opts .option {
+  margin-bottom: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.wrong-opts .option-label {
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  font-size: 12px;
+  margin-right: 8px;
 }
 

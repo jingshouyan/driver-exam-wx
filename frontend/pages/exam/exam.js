@@ -102,8 +102,7 @@ Page({
       if (userAnswer && userAnswer.toUpperCase() === q.answer.toUpperCase()) {
         correctCount++
       } else {
-        wrongList.push(q)
-      }
+        wrongList.push({ ...q, userAnswer })
     })
 
     const total = this.data.questions.length
@@ -134,6 +133,15 @@ Page({
       currentIndex: idx,
       selectedOption: this.data.answers[idx] || '',
     })
+  },
+
+  /** 交卷后错题选项样式 */
+  wrongOptClass(item, opt) {
+    const isUserAnswer = item.userAnswer === opt
+    const isCorrectOpt = item.answer.toUpperCase() === opt.toUpperCase()
+    if (isUserAnswer) return isCorrectOpt ? 'correct' : 'wrong'
+    if (isCorrectOpt) return 'reveal'
+    return ''
   },
 
   goHome() {
