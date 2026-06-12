@@ -6,9 +6,14 @@
 
   <!-- 上次练习结果 -->
   <view class="last-result" wx:if="{{lastResult && !isComplete}}">
-    <text class="last-check">✓</text>
-    <text class="last-sub">{{lastResult.totalAnswered}} / {{lastResult.totalQuestions || '?'}}</text>
-    <view class="clear-btn" catchtap="clearProgress">清除进度</view>
+    <view class="p-row">
+      <text class="last-icon">✅</text>
+      <text class="last-rate">{{lastResult.correctRate}}%</text>
+      <view class="clear-btn" catchtap="clearProgress">清除进度</view>
+    </view>
+    <view class="p-row">
+      <text class="last-sub">{{lastResult.totalAnswered}} / {{lastResult.totalQuestions || '?'}}</text>
+    </view>
   </view>
 
   <!-- 加载中 -->

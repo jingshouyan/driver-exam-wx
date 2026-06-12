@@ -151,14 +151,24 @@
 
 /* 科目进度 */
 .subject-progress {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.p-row {
   display: flex;
   align-items: center;
-  margin-top: 8px;
   gap: 6px;
 }
 
-.p-check {
+.p-icon {
   font-size: 14px;
+}
+
+.p-rate {
+  font-size: 16px;
   font-weight: 700;
   color: #07c160;
 }
@@ -166,5 +176,4 @@
 .p-count {
   font-size: 12px;
   color: #999;
-  margin-left: auto;
 }

@@ -237,17 +237,26 @@
 /* 上次练习结果 */
 .last-result {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   padding: 10px 16px;
   background-color: #f0f9ff;
   font-size: 14px;
   color: #333;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 4px;
 }
 
-.last-check {
-  font-size: 14px;
+.last-result .p-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.last-icon {
+  font-size: 16px;
+}
+
+.last-rate {
+  font-size: 16px;
   font-weight: 700;
   color: #07c160;
 }
@@ -255,7 +264,7 @@
 .last-sub {
   color: #999;
   font-size: 13px;
-  margin-left: 4px;
+  margin-left: auto;
 }
 
 .clear-btn {
