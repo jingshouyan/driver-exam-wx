@@ -246,7 +246,10 @@ Page({
 
     // 记录错题（selectOption 已设定 isCorrect）
     if (!this.data.isCorrect) {
-      storage.addWrongQuestion(this.data.questions[this.data.currentIndex])
+      const q = this.data.questions[this.data.currentIndex]
+      const alreadyWrong = storage.getWrongQuestions().some(x => x.id === q.id)
+      storage.addWrongQuestion(q)
+      if (alreadyWrong) storage.toggleMark(q.id)
     }
 
     const nextIndex = this.data.currentIndex + 1

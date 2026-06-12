@@ -192,7 +192,10 @@ Page({
     })
 
     if (!isCorrect) {
+      // 已在错题本的题目再错 → 自动标记
+      const alreadyWrong = storage.getWrongQuestions().some(q => q.id === question.id)
       storage.addWrongQuestion(question)
+      if (alreadyWrong) storage.toggleMark(question.id)
       // 记录到本局错题列表，用于完成页展示
       const wrongList = this.data.wrongList
       wrongList.push({ ...question, userAnswer: option })
