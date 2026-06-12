@@ -48,6 +48,7 @@ Page({
       const savedIdx = storage.getProgress(subject)
       const startIdx = savedIdx < cached.length ? savedIdx : 0
       this.setData({ questions: cached, currentIndex: startIdx })
+      this._savePartialResult()
       this._loadCurrentPic()
       wx.hideLoading()
     }
@@ -61,6 +62,7 @@ Page({
         const normalized = questions.map(q => ({ ...qutil.normalize(q), marked: false }))
         this.setData({ questions: normalized, currentIndex: 0 })
         storage.saveProgress(subject, 0)
+        this._savePartialResult()
         this._loadCurrentPic()
       })
     }).catch(err => {
