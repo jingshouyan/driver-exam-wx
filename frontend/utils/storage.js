@@ -208,6 +208,27 @@ function clearPracticeStats(subject) {
   wx.removeStorageSync(cumKey(subject))
 }
 
+// ── 练习答题记录 ──
+
+function ansKey(subject) {
+  return 'practice_answers_' + subject
+}
+
+/** 保存本局答题记录 */
+function saveAnswers(subject, answers) {
+  wx.setStorageSync(ansKey(subject), answers)
+}
+
+/** 读取答题记录 */
+function getAnswers(subject) {
+  return wx.getStorageSync(ansKey(subject)) || []
+}
+
+/** 清除答题记录 */
+function clearAnswers(subject) {
+  wx.removeStorageSync(ansKey(subject))
+}
+
 module.exports = {
   getWrongQuestions,
   addWrongQuestion,
@@ -227,5 +248,7 @@ module.exports = {
   updatePracticeStats,
   getPracticeStats,
   clearPracticeStats,
-
+  saveAnswers,
+  getAnswers,
+  clearAnswers,
 }

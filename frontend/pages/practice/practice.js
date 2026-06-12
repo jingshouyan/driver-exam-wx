@@ -47,7 +47,9 @@ Page({
       const cached = storage.getQuestionCache(subject).map(q => ({ ...qutil.normalize(q), marked: false }))
       const savedIdx = storage.getProgress(subject)
       const startIdx = savedIdx < cached.length ? savedIdx : 0
-      this.setData({ questions: cached, currentIndex: startIdx })
+      const savedAnswers = storage.getAnswers(subject)
+      this.setData({ questions: cached, currentIndex: startIdx, answers: savedAnswers })
+      this._restoreQuestion(startIdx, savedAnswers[startIdx] || '')
       this._savePartialResult()
       this._loadCurrentPic()
       wx.hideLoading()
@@ -66,8 +68,10 @@ Page({
         }
       ).then(questions => {
         const normalized = questions.map(q => ({ ...qutil.normalize(q), marked: false }))
-        this.setData({ questions: normalized, currentIndex: 0 })
+        const savedAnswers = storage.getAnswers(subject)
+        this.setData({ questions: normalized, currentIndex: 0, answers: savedAnswers })
         storage.saveProgress(subject, 0)
+        this._restoreQuestion(0, savedAnswers[0] || '')
         this._savePartialResult()
         this._loadCurrentPic()
       })
@@ -191,6 +195,9 @@ Page({
       ...cls,
     })
 
+    // 持久化答题记录
+    storage.saveAnswers(this.data.subject, answers)
+
     if (!isCorrect) {
       // 已在错题本的题目再错 → 自动标记
       const alreadyWrong = storage.getWrongQuestions().some(q => q.id === question.id)
@@ -285,6 +292,7 @@ Page({
         if (res.confirm) {
           storage.saveProgress(this.data.subject, 0)
           storage.clearPracticeStats(this.data.subject)
+          storage.clearAnswers(this.data.subject)
           this.setData({
             currentIndex: 0,
             lastResult: null,
