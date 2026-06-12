@@ -246,18 +246,16 @@
   flex-wrap: wrap;
 }
 
-.last-label {
-  color: #666;
-}
-
-.last-rate {
-  font-weight: 600;
+.last-check {
+  font-size: 14px;
+  font-weight: 700;
   color: #07c160;
 }
 
 .last-sub {
   color: #999;
   font-size: 13px;
+  margin-left: 4px;
 }
 
 .clear-btn {

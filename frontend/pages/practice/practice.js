@@ -32,6 +32,7 @@ Page({
       correctCount: stats.totalCorrect,
       correctRate: Math.round((stats.totalCorrect / stats.totalAnswered) * 100),
       totalAnswered: stats.totalAnswered,
+      totalQuestions: storage.getQuestionCache(subject).length || 0,
     } : null
     this.setData({ subject, lastResult })
     this.loadQuestions(subject)
@@ -203,7 +204,7 @@ Page({
     if (!stats || stats.totalAnswered === 0) return
     const correctRate = Math.round((stats.totalCorrect / stats.totalAnswered) * 100)
     this.setData({
-      lastResult: { correctCount: stats.totalCorrect, correctRate, totalAnswered: stats.totalAnswered },
+      lastResult: { correctCount: stats.totalCorrect, correctRate, totalAnswered: stats.totalAnswered, totalQuestions: this.data.questions.length },
     })
   },
 

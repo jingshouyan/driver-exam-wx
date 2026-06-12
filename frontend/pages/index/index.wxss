@@ -157,9 +157,9 @@
   gap: 6px;
 }
 
-.p-rate {
+.p-check {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: #07c160;
 }
 
