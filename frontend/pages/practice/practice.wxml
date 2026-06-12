@@ -4,6 +4,14 @@
     <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
   </view>
 
+  <!-- 上次练习结果 -->
+  <view class="last-result" wx:if="{{lastResult && !answered && !isComplete && questions.length}}">
+    <text class="last-label">上次练习：</text>
+    <text class="last-rate">正确率 {{lastResult.correctRate}}%</text>
+    <text class="last-sub">（{{lastResult.correctCount}}/{{lastResult.total}} 题）</text>
+    <view class="clear-btn" catchtap="clearProgress">清除进度</view>
+  </view>
+
   <!-- 加载中 -->
   <view class="loading" wx:if="{{!questions.length}}">
     <text>加载题目中...</text>

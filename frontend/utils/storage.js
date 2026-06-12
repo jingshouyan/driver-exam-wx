@@ -172,6 +172,27 @@ function getPicCache(url) {
   return wx.getStorageSync(picCacheKey(url)) || null
 }
 
+// ── 练习结果 ──
+
+function resultKey(subject) {
+  return 'practice_result_' + subject
+}
+
+/** 保存练习结果 */
+function savePracticeResult(subject, data) {
+  wx.setStorageSync(resultKey(subject), { ...data, timestamp: Date.now() })
+}
+
+/** 读取练习结果 */
+function getPracticeResult(subject) {
+  return wx.getStorageSync(resultKey(subject)) || null
+}
+
+/** 清除练习结果 */
+function clearPracticeResult(subject) {
+  wx.removeStorageSync(resultKey(subject))
+}
+
 module.exports = {
   getWrongQuestions,
   addWrongQuestion,
@@ -187,4 +208,7 @@ module.exports = {
   syncAllQuestions,
   savePicCache,
   getPicCache,
+  savePracticeResult,
+  getPracticeResult,
+  clearPracticeResult,
 }

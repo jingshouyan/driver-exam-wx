@@ -16,6 +16,8 @@ Page({
     isComplete: false,
     correctCount: 0,
     correctRate: 0,
+    total: 0,
+    lastResult: null,
     wrongList: [],
     optClassA: '',
     optClassB: '',
@@ -25,7 +27,8 @@ Page({
 
   onLoad(options) {
     const subject = parseInt(options.subject || 1)
-    this.setData({ subject })
+    const lastResult = storage.getPracticeResult(subject)
+    this.setData({ subject, lastResult })
     this.loadQuestions(subject)
   },
 
@@ -210,10 +213,14 @@ Page({
     ).length
     const correctRate = Math.round((correctCount / total) * 100)
 
+    // 保存本次练习结果
+    storage.savePracticeResult(this.data.subject, { correctCount, correctRate, total })
+
     this.setData({
       isComplete: true,
       correctCount,
       correctRate,
+      total,
     })
   },
 
@@ -232,6 +239,33 @@ Page({
     if (isUserAnswer) return isCorrectOpt ? 'correct' : 'wrong'
     if (isCorrectOpt) return 'reveal'
     return ''
+  },
+
+  /** 清除练习进度和结果 */
+  clearProgress() {
+    wx.showModal({
+      title: '清除进度',
+      content: '将清除练习进度和上次练习结果，确定吗？',
+      success: (res) => {
+        if (res.confirm) {
+          storage.saveProgress(this.data.subject, 0)
+          storage.clearPracticeResult(this.data.subject)
+          this.setData({
+            currentIndex: 0,
+            lastResult: null,
+            answered: false,
+            selectedOption: '',
+            isCorrect: false,
+            optClassA: '',
+            optClassB: '',
+            optClassC: '',
+            optClassD: '',
+            answers: [],
+          })
+          wx.showToast({ title: '已清除', icon: 'success' })
+        }
+      }
+    })
   },
 
   /** 返回首页 */

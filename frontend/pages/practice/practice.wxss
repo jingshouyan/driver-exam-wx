@@ -234,6 +234,41 @@
   color: #07c160;
 }
 
+/* 上次练习结果 */
+.last-result {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: #f0f9ff;
+  font-size: 14px;
+  color: #333;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.last-label {
+  color: #666;
+}
+
+.last-rate {
+  font-weight: 600;
+  color: #07c160;
+}
+
+.last-sub {
+  color: #999;
+  font-size: 13px;
+}
+
+.clear-btn {
+  margin-left: auto;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: #ee0a24;
+  border: 1px solid #ee0a24;
+  border-radius: 14px;
+}
+
 /* 完成页-错题回顾 */
 .wrong-list {
   margin: 16px;
