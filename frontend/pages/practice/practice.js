@@ -27,7 +27,12 @@ Page({
 
   onLoad(options) {
     const subject = parseInt(options.subject || 1)
-    const lastResult = storage.getPracticeResult(subject)
+    const stats = storage.getPracticeStats(subject)
+    const lastResult = stats ? {
+      correctCount: stats.totalCorrect,
+      correctRate: Math.round((stats.totalCorrect / stats.totalAnswered) * 100),
+      totalAnswered: stats.totalAnswered,
+    } : null
     this.setData({ subject, lastResult })
     this.loadQuestions(subject)
   },
@@ -187,20 +192,19 @@ Page({
       // 答对后延迟自动进入下一题
       setTimeout(() => this.nextQuestion(), 600)
     }
-    // 每次答题后保存进度结果
+    // 每次答题后记录累计统计
+    storage.updatePracticeStats(this.data.subject, question.id, isCorrect)
     this._savePartialResult()
   },
 
-  /** 计算并保存当前的正确率 */
+  /** 刷新显示的累计统计 */
   _savePartialResult() {
-    const total = this.data.questions.length || 1
-    const answeredCount = this.data.answers.filter(a => a !== '' && a !== undefined).length
-    if (answeredCount === 0) return
-    const wrongCount = this.data.wrongList.length
-    const correctCount = answeredCount - wrongCount
-    const correctRate = Math.round((correctCount / answeredCount) * 100)
-    storage.savePracticeResult(this.data.subject, { correctCount, correctRate, answered: answeredCount })
-    this.setData({ lastResult: { correctCount, correctRate, answered: answeredCount } })
+    const stats = storage.getPracticeStats(this.data.subject)
+    if (!stats || stats.totalAnswered === 0) return
+    const correctRate = Math.round((stats.totalCorrect / stats.totalAnswered) * 100)
+    this.setData({
+      lastResult: { correctCount: stats.totalCorrect, correctRate, totalAnswered: stats.totalAnswered },
+    })
   },
 
   /** 离开页面时保存进度 */
@@ -232,8 +236,8 @@ Page({
     ).length
     const correctRate = Math.round((correctCount / total) * 100)
 
-    // 保存本次练习结果
-    storage.savePracticeResult(this.data.subject, { correctCount, correctRate, answered: total })
+    // 保存最终累计统计
+    this._savePartialResult()
 
     this.setData({
       isComplete: true,
@@ -268,7 +272,7 @@ Page({
       success: (res) => {
         if (res.confirm) {
           storage.saveProgress(this.data.subject, 0)
-          storage.clearPracticeResult(this.data.subject)
+          storage.clearPracticeStats(this.data.subject)
           this.setData({
             currentIndex: 0,
             lastResult: null,

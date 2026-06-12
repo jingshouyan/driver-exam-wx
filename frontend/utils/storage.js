@@ -172,25 +172,32 @@ function getPicCache(url) {
   return wx.getStorageSync(picCacheKey(url)) || null
 }
 
-// ── 练习结果 ──
+// ── 练习统计（累计，按题目去重） ──
 
-function resultKey(subject) {
-  return 'practice_result_' + subject
+function cumKey(subject) {
+  return 'practice_cumulative_' + subject
 }
 
-/** 保存练习结果 */
-function savePracticeResult(subject, data) {
-  wx.setStorageSync(resultKey(subject), { ...data, timestamp: Date.now() })
+/** 记录一题的答题结果到累计统计 */
+function updatePracticeStats(subject, questionId, isCorrect) {
+  let data = wx.getStorageSync(cumKey(subject)) || { totalCorrect: 0, totalAnswered: 0, ids: {} }
+  if (data.ids[questionId]) return // 已记录过，跳过
+  data.ids[questionId] = isCorrect
+  data.totalAnswered++
+  if (isCorrect) data.totalCorrect++
+  wx.setStorageSync(cumKey(subject), data)
 }
 
-/** 读取练习结果 */
-function getPracticeResult(subject) {
-  return wx.getStorageSync(resultKey(subject)) || null
+/** 读取累计统计 */
+function getPracticeStats(subject) {
+  const data = wx.getStorageSync(cumKey(subject))
+  if (!data || !data.ids) return null
+  return { totalCorrect: data.totalCorrect || 0, totalAnswered: data.totalAnswered || 0 }
 }
 
-/** 清除练习结果 */
-function clearPracticeResult(subject) {
-  wx.removeStorageSync(resultKey(subject))
+/** 清除累计统计 */
+function clearPracticeStats(subject) {
+  wx.removeStorageSync(cumKey(subject))
 }
 
 module.exports = {
@@ -208,7 +215,7 @@ module.exports = {
   syncAllQuestions,
   savePicCache,
   getPicCache,
-  savePracticeResult,
-  getPracticeResult,
-  clearPracticeResult,
+  updatePracticeStats,
+  getPracticeStats,
+  clearPracticeStats,
 }
