@@ -187,6 +187,25 @@ Page({
       // 答对后延迟自动进入下一题
       setTimeout(() => this.nextQuestion(), 600)
     }
+    // 每次答题后保存进度结果
+    this._savePartialResult()
+  },
+
+  /** 计算并保存当前的正确率 */
+  _savePartialResult() {
+    const total = this.data.questions.length || 1
+    const answeredCount = this.data.answers.filter(a => a !== '' && a !== undefined).length
+    if (answeredCount === 0) return
+    const wrongCount = this.data.wrongList.length
+    const correctCount = answeredCount - wrongCount
+    const correctRate = Math.round((correctCount / answeredCount) * 100)
+    storage.savePracticeResult(this.data.subject, { correctCount, correctRate, total })
+    this.setData({ lastResult: { correctCount, correctRate, total } })
+  },
+
+  /** 离开页面时保存进度 */
+  onHide() {
+    this._savePartialResult()
   },
 
   /** 下一题 */

@@ -5,7 +5,7 @@
   </view>
 
   <!-- 上次练习结果 -->
-  <view class="last-result" wx:if="{{lastResult && !answered && !isComplete && questions.length}}">
+  <view class="last-result" wx:if="{{lastResult && !isComplete}}">
     <text class="last-label">上次练习：</text>
     <text class="last-rate">正确率 {{lastResult.correctRate}}%</text>
     <text class="last-sub">（{{lastResult.correctCount}}/{{lastResult.total}} 题）</text>
