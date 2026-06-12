@@ -199,8 +199,8 @@ Page({
     const wrongCount = this.data.wrongList.length
     const correctCount = answeredCount - wrongCount
     const correctRate = Math.round((correctCount / answeredCount) * 100)
-    storage.savePracticeResult(this.data.subject, { correctCount, correctRate, total })
-    this.setData({ lastResult: { correctCount, correctRate, total } })
+    storage.savePracticeResult(this.data.subject, { correctCount, correctRate, answered: answeredCount })
+    this.setData({ lastResult: { correctCount, correctRate, answered: answeredCount } })
   },
 
   /** 离开页面时保存进度 */
@@ -233,7 +233,7 @@ Page({
     const correctRate = Math.round((correctCount / total) * 100)
 
     // 保存本次练习结果
-    storage.savePracticeResult(this.data.subject, { correctCount, correctRate, total })
+    storage.savePracticeResult(this.data.subject, { correctCount, correctRate, answered: total })
 
     this.setData({
       isComplete: true,
