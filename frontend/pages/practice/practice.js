@@ -27,12 +27,12 @@ Page({
 
   onLoad(options) {
     const subject = parseInt(options.subject || 1)
-    const stats = storage.getPracticeStats(subject)
-    const lastResult = stats ? {
-      correctCount: stats.totalCorrect,
-      correctRate: Math.round((stats.totalCorrect / stats.totalAnswered) * 100),
-      totalAnswered: stats.totalAnswered,
-      totalQuestions: storage.getQuestionCache(subject).length || 0,
+    const latest = storage.getLatestResult(subject)
+    const lastResult = latest ? {
+      correctCount: latest.correctCount,
+      correctRate: latest.correctRate,
+      totalAnswered: latest.totalAnswered,
+      totalQuestions: latest.totalQuestions,
     } : null
     this.setData({ subject, lastResult })
     this.loadQuestions(subject)
@@ -209,18 +209,21 @@ Page({
     this._savePartialResult()
   },
 
-  /** 刷新显示的累计统计 */
+  /** 保存当前答题进度到累计统计 */
   _savePartialResult() {
-    const stats = storage.getPracticeStats(this.data.subject)
-    if (!stats || stats.totalAnswered === 0) return
-    const correctRate = Math.round((stats.totalCorrect / stats.totalAnswered) * 100)
+    const answeredCount = this.data.answers.filter(a => a !== '' && a !== undefined).length
+    if (answeredCount === 0) return
+    const correctCount = answeredCount - this.data.wrongList.length
+    const correctRate = Math.round((correctCount / answeredCount) * 100)
+    const total = this.data.questions.length || 0
+    storage.saveLatestResult(this.data.subject, { correctCount, correctRate, totalAnswered: answeredCount, totalQuestions: total })
     this.setData({
-      lastResult: { correctCount: stats.totalCorrect, correctRate, totalAnswered: stats.totalAnswered, totalQuestions: this.data.questions.length },
+      lastResult: { correctCount, correctRate, totalAnswered: answeredCount, totalQuestions: total },
     })
   },
 
-  /** 离开页面时保存进度 */
-  onHide() {
+  /** 离开页面时保存结果 */
+  onUnload() {
     this._savePartialResult()
   },
 
@@ -248,8 +251,9 @@ Page({
     ).length
     const correctRate = Math.round((correctCount / total) * 100)
 
-    // 保存最终累计统计
+    // 保存最终累计统计和最近一次结果
     this._savePartialResult()
+    storage.saveLatestResult(this.data.subject, { correctCount, correctRate, totalAnswered: total, totalQuestions: total })
 
     this.setData({
       isComplete: true,
@@ -285,6 +289,7 @@ Page({
         if (res.confirm) {
           storage.saveProgress(this.data.subject, 0)
           storage.clearPracticeStats(this.data.subject)
+          storage.clearLatestResult(this.data.subject)
           this.setData({
             currentIndex: 0,
             lastResult: null,
