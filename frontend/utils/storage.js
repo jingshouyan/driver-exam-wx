@@ -2,6 +2,7 @@
  * 本地存储工具
  * 管理 token、答题进度、错题本
  */
+const api = require('./api')
 const qutil = require('./question')
 
 const WRONG_KEY = 'wrong_questions'
@@ -95,8 +96,6 @@ function hasCache(subject) {
 }
 
 // ── 分页同步 ──
-
-const api = require('./api')
 
 /** 带重试的分页拉取 */
 function fetchPageWithRetry(subject, page, maxRetries = 3) {
