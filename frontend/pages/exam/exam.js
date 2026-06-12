@@ -41,7 +41,13 @@ Page({
     if (!storage.hasCache(subject)) {
       // 无缓存 → 先分页拉取全部缓存
       wx.showLoading({ title: '正在更新题库...' })
-      storage.syncAllQuestions(subject, '').then(() => {
+      storage.syncAllQuestions(
+        subject,
+        '',
+        (page, total) => {
+          wx.showLoading({ title: `同步中 ${page}/${total} 页...` })
+        }
+      ).then(() => {
         this._startExam(subject)
         this._loadCurrentPic()
       }).catch(err => {

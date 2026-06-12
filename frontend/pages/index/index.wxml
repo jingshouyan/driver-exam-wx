@@ -48,6 +48,11 @@
     </view>
   </view>
 
+  <!-- 后台同步提示 -->
+  <view class="sync-banner" wx:if="{{syncing}}">
+    <text>{{syncText}}</text>
+  </view>
+
   <!-- 游客标识 -->
   <view class="guest-banner" wx:if="{{isGuest}}">
     <text>游客模式 — 登录后可同步错题本</text>

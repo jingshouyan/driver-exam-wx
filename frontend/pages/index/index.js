@@ -1,3 +1,4 @@
+const api = require('../../utils/api')
 const storage = require('../../utils/storage')
 
 Page({
@@ -7,12 +8,38 @@ Page({
     isGuest: false,
     result1: null,
     result4: null,
+    syncing: false,
+    syncText: '',
+  },
+
+  onLoad() {
+    this.preloadQuestions()
   },
 
   onShow() {
     this.checkLogin()
     this.loadWrongCount()
     this.loadPracticeResults()
+  },
+
+  /** 预加载题库（首次无缓存时后台同步） */
+  preloadQuestions() {
+    if (storage.hasCache(1) && storage.hasCache(4)) return
+    this.setData({ syncing: true, syncText: '正在下载题库，首次加载稍慢...' })
+    const doSync = (subj) => {
+      if (storage.hasCache(subj)) return Promise.resolve()
+      return storage.syncAllQuestions(
+        subj,
+        '',
+        (page, total) => this.setData({ syncText: `正在下载题库 ${page}/${total} 页...` })
+      )
+    }
+    doSync(1).then(() => doSync(4)).then(() => {
+      this.setData({ syncing: false, syncText: '' })
+      this.loadPracticeResults()
+    }).catch(() => {
+      this.setData({ syncing: false, syncText: '' })
+    })
   },
 
   /** 加载累计练习进度 */

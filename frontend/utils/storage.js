@@ -97,11 +97,13 @@ function hasCache(subject) {
 
 // ── 分页同步 ──
 
+const SYNC_PAGE_SIZE = 500
+
 /** 带重试的分页拉取 */
 function fetchPageWithRetry(subject, page, maxRetries = 3) {
   return new Promise((resolve, reject) => {
     const tryFetch = (n) => {
-      api.getQuestions(subject, page, 100).then(resolve).catch(err => {
+      api.getQuestions(subject, page, SYNC_PAGE_SIZE).then(resolve).catch(err => {
         if (n < maxRetries) {
           setTimeout(() => tryFetch(n + 1), 1000 * (n + 1))
         } else {
@@ -113,13 +115,14 @@ function fetchPageWithRetry(subject, page, maxRetries = 3) {
   })
 }
 
-/** 分页拉取全部题目并缓存，每页 100 条，失败重试 */
-function syncAllQuestions(subject, serverVersion) {
+/** 分页拉取全部题目并缓存，onProgress(page, totalPages) 回调 */
+function syncAllQuestions(subject, serverVersion, onProgress) {
   return fetchPageWithRetry(subject, 1).then(first => {
     const total = first.total || 0
-    const pageSize = 100
-    const totalPages = Math.ceil(total / pageSize)
+    const totalPages = Math.ceil(total / SYNC_PAGE_SIZE)
     let all = first.questions || []
+
+    if (onProgress) onProgress(1, totalPages)
 
     if (totalPages <= 1) {
       const questions = all.map(q => qutil.normalize(q))
@@ -127,15 +130,15 @@ function syncAllQuestions(subject, serverVersion) {
       return questions
     }
 
-    // 逐页拉取剩余页，每页最多重试 3 次
+    // 逐页拉取剩余页
     const pages = []
     for (let p = 2; p <= totalPages; p++) {
       pages.push(p)
     }
     return pages.reduce((promise, page) => {
-      return promise.then(() => new Promise(r => setTimeout(r, 300)))
-             .then(() => fetchPageWithRetry(subject, page).then(data => {
+      return promise.then(() => fetchPageWithRetry(subject, page).then(data => {
         all = all.concat(data.questions || [])
+        if (onProgress) onProgress(page, totalPages)
       }))
     }, Promise.resolve()).then(() => {
       const questions = all.map(q => qutil.normalize(q))

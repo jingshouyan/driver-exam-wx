@@ -58,7 +58,13 @@ Page({
       const localVersion = storage.getCacheVersion(subject)
       if (serverVersion === localVersion) return // 已最新
       wx.showLoading({ title: '正在更新题库...' })
-      return storage.syncAllQuestions(subject, serverVersion).then(questions => {
+      return storage.syncAllQuestions(
+        subject,
+        serverVersion,
+        (page, total) => {
+          wx.showLoading({ title: `同步中 ${page}/${total} 页...` })
+        }
+      ).then(questions => {
         const normalized = questions.map(q => ({ ...qutil.normalize(q), marked: false }))
         this.setData({ questions: normalized, currentIndex: 0 })
         storage.saveProgress(subject, 0)
