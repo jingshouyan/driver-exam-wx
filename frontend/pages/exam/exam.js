@@ -23,6 +23,7 @@ Page({
     wrongCount: 0,
     wrongList: [],
     timeLeft: 0,
+    timerClass: '',
     _timer: null,
   },
 
@@ -77,7 +78,7 @@ Page({
   /** 开启倒计时 科目1=45min 科目4=30min */
   _startTimer() {
     const duration = this.data.subject === 1 ? 2700 : 1800
-    this.setData({ timeLeft: duration })
+    this.setData({ timeLeft: duration, timerClass: '' })
     if (this.data._timer) clearInterval(this.data._timer)
     const timer = setInterval(() => {
       let t = this.data.timeLeft - 1
@@ -86,7 +87,7 @@ Page({
         clearInterval(timer)
         this._timerExpired()
       }
-      this.setData({ timeLeft: t })
+      this.setData({ timeLeft: t, timerClass: t <= 60 ? 'timer-warn' : '' })
     }, 1000)
     this.data._timer = timer
   },
