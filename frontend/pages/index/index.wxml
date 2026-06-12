@@ -14,8 +14,8 @@
         <text class="subject-num">科目一</text>
         <text class="subject-desc">道路交通安全法律</text>
         <view class="subject-progress">
-          <text class="p-icon" wx:if="{{result1}}">✅</text>
-          <text class="p-rate">{{result1 ? result1.correctRate : '0'}}%</text>
+          <text class="p-icon">✅</text>
+          <text class="p-rate">{{result1 ? result1.correctRate : 0}}%</text>
           <text class="p-count">{{result1 ? result1.totalAnswered : 0}} / {{result1 ? result1.totalQuestions : 0}}</text>
         </view>
       </view>
@@ -23,13 +23,9 @@
         <text class="subject-num">科目四</text>
         <text class="subject-desc">安全文明驾驶</text>
         <view class="subject-progress">
-          <view class="p-row" wx:if="{{result4}}">
-            <text class="p-icon">✅</text>
-            <text class="p-rate">{{result4.correctRate}}%</text>
-          </view>
-          <view class="p-row">
-            <text class="p-count">{{result4 ? result4.totalAnswered : 0}} / {{result4 ? result4.totalQuestions : 0}}</text>
-          </view>
+          <text class="p-icon">✅</text>
+          <text class="p-rate">{{result4 ? result4.correctRate : 0}}%</text>
+          <text class="p-count">{{result4 ? result4.totalAnswered : 0}} / {{result4 ? result4.totalQuestions : 0}}</text>
         </view>
       </view>
     </view>

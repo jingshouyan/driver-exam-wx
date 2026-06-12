@@ -153,15 +153,9 @@
 .subject-progress {
   margin-top: 10px;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.p-row {
-  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .p-icon {
