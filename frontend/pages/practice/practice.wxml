@@ -1,14 +1,9 @@
 <view class="page" bindtouchstart="handleTouchStart" bindtouchend="handleTouchEnd">
-  <!-- 顶部信息栏 -->
-  <view class="top-bar">
-    <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
-  </view>
-
-  <!-- 上次练习结果 -->
-  <view class="last-result" wx:if="{{lastResult && !isComplete}}">
+  <!-- 练习结果 -->
+  <view class="last-result" wx:if="{{!isComplete}}">
     <text class="last-icon">✅</text>
-    <text class="last-rate">{{lastResult.correctRate}}%</text>
-    <text class="last-sub">{{lastResult.totalAnswered}} / {{lastResult.totalQuestions}}</text>
+    <text class="last-rate">{{lastResult ? lastResult.correctRate : 0}}%</text>
+    <text class="last-sub">{{lastResult ? lastResult.totalAnswered : 0}} / {{lastResult ? lastResult.totalQuestions : 0}}</text>
     <view class="clear-btn" catchtap="clearProgress">清除进度</view>
   </view>
 
