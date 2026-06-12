@@ -248,7 +248,12 @@
 .last-result .p-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+}
+
+.last-result .p-row-wide {
+  justify-content: space-between;
 }
 
 .last-icon {

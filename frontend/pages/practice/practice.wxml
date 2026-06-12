@@ -6,7 +6,7 @@
 
   <!-- 上次练习结果 -->
   <view class="last-result" wx:if="{{lastResult && !isComplete}}">
-    <view class="p-row">
+    <view class="p-row p-row-wide">
       <text class="last-icon">✅</text>
       <text class="last-rate">{{lastResult.correctRate}}%</text>
       <view class="clear-btn" catchtap="clearProgress">清除进度</view>
