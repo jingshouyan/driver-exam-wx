@@ -179,6 +179,8 @@ Page({
       isCorrect,
       ...cls,
     })
+    // 选完后延迟自动进入下一题
+    setTimeout(() => this.nextQuestion(), 500)
   },
 
   /** 下一题或交卷 */
