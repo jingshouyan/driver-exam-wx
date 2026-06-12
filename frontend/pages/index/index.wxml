@@ -13,26 +13,26 @@
       <view class="subject-card {{selectedSubject === 1 ? 'active' : ''}}" bindtap="selectSubject" data-subject="1">
         <text class="subject-num">科目一</text>
         <text class="subject-desc">道路交通安全法律</text>
-        <view class="subject-progress" wx:if="{{result1}}">
-          <view class="p-row">
+        <view class="subject-progress">
+          <view class="p-row" wx:if="{{result1}}">
             <text class="p-icon">✅</text>
             <text class="p-rate">{{result1.correctRate}}%</text>
           </view>
           <view class="p-row">
-            <text class="p-count">{{result1.totalAnswered}} / {{result1.totalQuestions || '?'}}</text>
+            <text class="p-count">{{result1 ? result1.totalAnswered : 0}} / {{result1 ? result1.totalQuestions : 0}}</text>
           </view>
         </view>
       </view>
       <view class="subject-card {{selectedSubject === 4 ? 'active' : ''}}" bindtap="selectSubject" data-subject="4">
         <text class="subject-num">科目四</text>
         <text class="subject-desc">安全文明驾驶</text>
-        <view class="subject-progress" wx:if="{{result4}}">
-          <view class="p-row">
+        <view class="subject-progress">
+          <view class="p-row" wx:if="{{result4}}">
             <text class="p-icon">✅</text>
             <text class="p-rate">{{result4.correctRate}}%</text>
           </view>
           <view class="p-row">
-            <text class="p-count">{{result4.totalAnswered}} / {{result4.totalQuestions || '?'}}</text>
+            <text class="p-count">{{result4 ? result4.totalAnswered : 0}} / {{result4 ? result4.totalQuestions : 0}}</text>
           </view>
         </view>
       </view>
