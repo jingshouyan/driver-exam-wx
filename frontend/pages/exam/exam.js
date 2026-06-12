@@ -22,6 +22,8 @@ Page({
     correctCount: 0,
     wrongCount: 0,
     wrongList: [],
+    timeLeft: 0,
+    _timer: null,
   },
 
   onLoad(options) {
@@ -65,6 +67,44 @@ Page({
     }).catch(() => {})
   },
 
+  /** 格式化 mm:ss */
+  _formatTime(sec) {
+    const m = Math.floor(sec / 60)
+    const s = sec % 60
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  },
+
+  /** 开启倒计时 科目1=45min 科目4=30min */
+  _startTimer() {
+    const duration = this.data.subject === 1 ? 2700 : 1800
+    this.setData({ timeLeft: duration })
+    if (this.data._timer) clearInterval(this.data._timer)
+    const timer = setInterval(() => {
+      let t = this.data.timeLeft - 1
+      if (t <= 0) {
+        t = 0
+        clearInterval(timer)
+        this._timerExpired()
+      }
+      this.setData({ timeLeft: t })
+    }, 1000)
+    this.data._timer = timer
+  },
+
+  /** 倒计时结束自动交卷 */
+  _timerExpired() {
+    wx.showToast({ title: '时间到，自动交卷', icon: 'none', duration: 2000 })
+    setTimeout(() => this.submitExam(), 1000)
+  },
+
+  /** 停止计时 */
+  _stopTimer() {
+    if (this.data._timer) {
+      clearInterval(this.data._timer)
+      this.data._timer = null
+    }
+  },
+
   /** 从缓存中随机抽题 */
   _startExam(subject) {
     const all = storage.getQuestionCache(subject).map(q => ({ ...qutil.normalize(q), marked: false }))
@@ -77,6 +117,7 @@ Page({
       answers: new Array(questions.length).fill(''),
     })
     this._loadCurrentPic()
+    this._startTimer()
     wx.hideLoading()
   },
 
@@ -207,6 +248,7 @@ Page({
 
   /** 交卷 */
   submitExam() {
+    this._stopTimer()
 
     let correctCount = 0
     const wrongList = []
@@ -248,6 +290,11 @@ Page({
       currentIndex: idx,
       selectedOption: this.data.answers[idx] || '',
     })
+  },
+
+  /** 离开页面时停止计时 */
+  onUnload() {
+    this._stopTimer()
   },
 
   /** 交卷后错题选项样式 */

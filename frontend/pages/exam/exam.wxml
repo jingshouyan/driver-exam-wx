@@ -2,7 +2,8 @@
   <!-- 顶部信息栏 -->
   <view class="top-bar">
     <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
-    <text class="exam-badge">模拟考试</text>
+    <text class="timer {{timeLeft <= 60 ? 'timer-warn' : ''}}" wx:if="{{timeLeft > 0 && !submitted}}">{{_formatTime(timeLeft)}}</text>
+    <text class="exam-badge" wx:else>模拟考试</text>
   </view>
 
   <!-- 加载 -->
