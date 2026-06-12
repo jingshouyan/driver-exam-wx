@@ -17,10 +17,19 @@ Page({
 
   /** 加载累计练习进度 */
   loadPracticeResults() {
-    const fmt = (s) => s ? { correctCount: s.totalCorrect, correctRate: Math.round((s.totalCorrect / s.totalAnswered) * 100) } : null
+    const fmt = (s, subj) => {
+      if (!s) return null
+      const total = storage.getQuestionCache(subj).length || 0
+      return {
+        correctCount: s.totalCorrect,
+        totalAnswered: s.totalAnswered,
+        totalQuestions: total,
+        correctRate: Math.round((s.totalCorrect / s.totalAnswered) * 100),
+      }
+    }
     this.setData({
-      result1: fmt(storage.getPracticeStats(1)),
-      result4: fmt(storage.getPracticeStats(4)),
+      result1: fmt(storage.getPracticeStats(1), 1),
+      result4: fmt(storage.getPracticeStats(4), 4),
     })
   },
 
