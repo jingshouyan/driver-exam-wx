@@ -4,6 +4,7 @@ const qutil = require('../../utils/question')
 Page({
   data: {
     filterSubject: 0,
+    filterMarked: false,
     wrongList: [],
     filteredList: [],
     expandedIndex: -1,
@@ -21,10 +22,13 @@ Page({
   },
 
   filterList() {
-    const { wrongList, filterSubject } = this.data
-    const filtered = filterSubject === 0
+    const { wrongList, filterSubject, filterMarked } = this.data
+    let filtered = filterSubject === 0
       ? wrongList
       : wrongList.filter(q => q.subject === filterSubject)
+    if (filterMarked) {
+      filtered = filtered.filter(q => q.marked)
+    }
     this.setData({ filteredList: filtered })
   },
 
@@ -32,6 +36,16 @@ Page({
     const subject = parseInt(e.currentTarget.dataset.subject)
     this.setData({
       filterSubject: subject,
+      filterMarked: false,
+      expandedIndex: -1,
+    })
+    this.filterList()
+  },
+
+  setMarked() {
+    this.setData({
+      filterSubject: 0,
+      filterMarked: !this.data.filterMarked,
       expandedIndex: -1,
     })
     this.filterList()
