@@ -16,7 +16,7 @@
     <view class="question-area" wx:if="{{i === currentIndex && !submitted}}">
       <!-- 题目 -->
       <view class="card question-card">
-        <view class="q-label">第 {{currentIndex + 1}} 题</view>
+        <view class="q-label">第 {{currentIndex + 1}} 题 <text class="marked-badge" wx:if="{{item.marked}}">已标记</text></view>
         <view class="q-text">{{item.question}}</view>
         <image class="q-pic" wx:if="{{item.pic}}" src="{{item.picData || ''}}" mode="widthFix"></image>
       </view>

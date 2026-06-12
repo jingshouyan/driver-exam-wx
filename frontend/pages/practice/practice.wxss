@@ -37,6 +37,17 @@
   font-size: 13px;
   color: #07c160;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.marked-badge {
+  font-size: 11px;
+  color: #ff6a00;
+  background-color: #fff0e0;
+  padding: 1px 6px;
+  border-radius: 4px;
 }
 
 .q-text {
