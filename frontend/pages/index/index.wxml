@@ -15,7 +15,7 @@
         <text class="subject-desc">道路交通安全法律</text>
         <view class="subject-progress" wx:if="{{result1}}">
           <text class="p-rate">正确率 {{result1.correctRate}}%</text>
-          <text class="p-count">已答 {{result1.answered}} 题</text>
+          <text class="p-count">答对 {{result1.correctCount}} 题</text>
         </view>
       </view>
       <view class="subject-card {{selectedSubject === 4 ? 'active' : ''}}" bindtap="selectSubject" data-subject="4">
@@ -23,7 +23,7 @@
         <text class="subject-desc">安全文明驾驶</text>
         <view class="subject-progress" wx:if="{{result4}}">
           <text class="p-rate">正确率 {{result4.correctRate}}%</text>
-          <text class="p-count">已答 {{result4.answered}} 题</text>
+          <text class="p-count">答对 {{result4.correctCount}} 题</text>
         </view>
       </view>
     </view>
