@@ -23,6 +23,7 @@ Page({
     wrongCount: 0,
     wrongList: [],
     timeLeft: 0,
+    timeStr: '00:00',
     timerClass: '',
     _timer: null,
   },
@@ -72,13 +73,13 @@ Page({
   _formatTime(sec) {
     const m = Math.floor(sec / 60)
     const s = sec % 60
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s
   },
 
   /** 开启倒计时 科目1=45min 科目4=30min */
   _startTimer() {
     const duration = this.data.subject === 1 ? 2700 : 1800
-    this.setData({ timeLeft: duration, timerClass: '' })
+    this.setData({ timeLeft: duration, timeStr: this._formatTime(duration), timerClass: '' })
     if (this.data._timer) clearInterval(this.data._timer)
     const timer = setInterval(() => {
       let t = this.data.timeLeft - 1
@@ -87,7 +88,11 @@ Page({
         clearInterval(timer)
         this._timerExpired()
       }
-      this.setData({ timeLeft: t, timerClass: t <= 60 ? 'timer-warn' : '' })
+      this.setData({
+        timeLeft: t,
+        timerClass: t <= 60 ? 'timer-warn' : '',
+        timeStr: this._formatTime(t),
+      })
     }, 1000)
     this.data._timer = timer
   },

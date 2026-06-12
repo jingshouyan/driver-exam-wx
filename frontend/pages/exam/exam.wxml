@@ -2,8 +2,8 @@
   <!-- 顶部信息栏 -->
   <view class="top-bar">
     <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
+    <text class="timer {{timerClass}}">{{timeStr}}</text>
     <text class="exam-badge">模拟考试</text>
-    <text class="timer {{timerClass}}">{{_formatTime(timeLeft)}}</text>
   </view>
 
   <!-- 加载 -->
