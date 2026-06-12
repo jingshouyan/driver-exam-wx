@@ -27,20 +27,15 @@ function request(method, path, data) {
 
     if (CLOUD_MODE) {
       // === 云托管模式 ===
-      const callOpts = {
+      wx.cloud.callContainer({
         config: { env: CONFIG.cloudEnv },
         path: '/api/v1' + path,
         method,
+        ...(data !== undefined && method !== 'GET' ? { data } : {}),
         header: {
           ...commonHeader,
           'X-WX-SERVICE': CONFIG.cloudService,
         },
-      }
-      // GET 请求不传 body，避免空 data 引发云托管异常
-      if (data !== undefined && method !== 'GET') {
-        callOpts.data = data
-      }
-      wx.cloud.callContainer(callOpts)
         success(res) {
           // callContainer 的响应在 res.data 里
           const body = res.data
