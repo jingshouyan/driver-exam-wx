@@ -15,11 +15,12 @@ Page({
     this.loadPracticeResults()
   },
 
-  /** 加载练习进度 */
+  /** 加载练习进度，兼容旧数据（total→answered） */
   loadPracticeResults() {
+    const fix = (r) => r ? { ...r, answered: r.answered || r.total || 0 } : null
     this.setData({
-      result1: storage.getPracticeResult(1),
-      result4: storage.getPracticeResult(4),
+      result1: fix(storage.getPracticeResult(1)),
+      result4: fix(storage.getPracticeResult(4)),
     })
   },
 
