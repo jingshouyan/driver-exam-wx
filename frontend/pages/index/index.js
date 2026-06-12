@@ -35,6 +35,12 @@ Page({
       )
     }
     doSync(1).then(() => doSync(4)).then(() => {
+      // 同步完成后获取真实版本号，避免 practice 页重复同步
+      return Promise.all([
+        api.getQuestionsVersion(1).then(v => storage.saveCacheVersion(1, v)).catch(() => {}),
+        api.getQuestionsVersion(4).then(v => storage.saveCacheVersion(4, v)).catch(() => {}),
+      ])
+    }).then(() => {
       this.setData({ syncing: false, syncText: '' })
       this.loadPracticeResults()
     }).catch(() => {

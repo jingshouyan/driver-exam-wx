@@ -79,6 +79,11 @@ function saveQuestionCache(subject, questions, version) {
   wx.setStorageSync(versionKey(subject), version)
 }
 
+/** 单独保存缓存版本号 */
+function saveCacheVersion(subject, version) {
+  wx.setStorageSync(versionKey(subject), version)
+}
+
 /** 读取题目缓存 */
 function getQuestionCache(subject) {
   return wx.getStorageSync(cacheKey(subject)) || []
@@ -210,6 +215,7 @@ module.exports = {
   toggleMark,
   clearWrongBySubject,
   saveQuestionCache,
+  saveCacheVersion,
   getQuestionCache,
   getCacheVersion,
   hasCache,
