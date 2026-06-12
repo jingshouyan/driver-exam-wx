@@ -6,7 +6,6 @@
 /* 顶部栏 */
 .top-bar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
   background-color: #fff;
@@ -14,6 +13,11 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  gap: 8px;
+}
+
+.top-bar .timer {
+  margin-left: auto;
 }
 
 .progress {
