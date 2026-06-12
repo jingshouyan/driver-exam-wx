@@ -18,7 +18,7 @@ Page({
   /** 加载累计练习进度 */
   loadPracticeResults() {
     const fmt = (s, subj) => {
-      if (!s) return null
+      if (!s || s.totalAnswered === 0) return null
       const total = storage.getQuestionCache(subj).length || 0
       return {
         correctCount: s.totalCorrect,
