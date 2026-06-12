@@ -5,11 +5,22 @@ Page({
     selectedSubject: 0,
     wrongCount: 0,
     isGuest: false,
+    result1: null,
+    result4: null,
   },
 
   onShow() {
     this.checkLogin()
     this.loadWrongCount()
+    this.loadPracticeResults()
+  },
+
+  /** 加载练习进度 */
+  loadPracticeResults() {
+    this.setData({
+      result1: storage.getPracticeResult(1),
+      result4: storage.getPracticeResult(4),
+    })
   },
 
   /** 自动登录，失败则游客模式 */
