@@ -21,7 +21,7 @@
       <view class="card question-card">
         <view class="q-label">第 {{currentIndex + 1}} 题</view>
         <view class="q-text">{{item.title}}</view>
-        <view class="q-pic-wrap" wx:if="{{item.sub_pic}}">
+        <view class="q-pic-wrap" wx:if="{{item.sub_pic}}" bindtap="previewPic" data-src="{{item.sub_pic}}">
           <image class="q-pic" src="{{item.sub_pic}}" mode="aspectFit"></image>
         </view>
       </view>

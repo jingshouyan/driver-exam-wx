@@ -321,6 +321,12 @@ Page({
     return ''
   },
 
+  /** 图片预览 */
+  previewPic(e) {
+    const src = e.currentTarget.dataset.src
+    if (src) wx.previewImage({ current: src, urls: [src] })
+  },
+
   goHome() {
     wx.navigateBack()
   },

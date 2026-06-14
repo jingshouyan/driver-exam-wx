@@ -311,6 +311,12 @@ Page({
     })
   },
 
+  /** 图片预览 */
+  previewPic(e) {
+    const src = e.currentTarget.dataset.src
+    if (src) wx.previewImage({ current: src, urls: [src] })
+  },
+
   /** 返回首页 */
   goHome() {
     wx.navigateBack()
