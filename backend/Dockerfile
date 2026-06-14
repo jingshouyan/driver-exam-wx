@@ -9,9 +9,6 @@ WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
 
-# 先复制套题数据（.dockerignore 排除了 data/）
-COPY data/c1k1 /build/data/c1k1
-
 # 复制源码并编译
 COPY . .
 RUN CGO_ENABLED=0 go build -o /build/server ./cmd/server
