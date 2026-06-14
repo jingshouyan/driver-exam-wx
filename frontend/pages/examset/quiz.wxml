@@ -1,0 +1,93 @@
+<view class="page" bindtouchstart="handleTouchStart" bindtouchend="handleTouchEnd">
+  <!-- 顶部信息栏 -->
+  <view class="top-bar">
+    <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
+    <text class="timer">{{timeStr}}</text>
+    <text class="exam-badge">套题</text>
+  </view>
+
+  <!-- 加载 -->
+  <view class="loading" wx:if="{{!questions.length}}">
+    <text>加载题目中...</text>
+  </view>
+
+  <!-- 答题区 -->
+  <block wx:for="{{questions}}" wx:key="sort" wx:for-index="i">
+    <view class="question-area" wx:if="{{i === currentIndex && !submitted}}">
+      <!-- 题目 -->
+      <view class="card question-card">
+        <view class="q-label">第 {{currentIndex + 1}} 题</view>
+        <view class="q-text">{{item.title}}</view>
+        <image class="q-pic" wx:if="{{item.sub_pic}}" src="{{item.sub_pic}}" mode="widthFix"></image>
+      </view>
+
+      <!-- 选项 -->
+      <view class="options">
+        <view class="option {{optClassA}}" bindtap="selectOption" data-option="A" wx:if="{{item.opt_a}}">
+          <text class="option-label">A</text>
+          <text class="option-text">{{item.opt_a}}</text>
+        </view>
+        <view class="option {{optClassB}}" bindtap="selectOption" data-option="B" wx:if="{{item.opt_b}}">
+          <text class="option-label">B</text>
+          <text class="option-text">{{item.opt_b}}</text>
+        </view>
+        <view class="option {{optClassC}}" bindtap="selectOption" data-option="C" wx:if="{{item.opt_c}}">
+          <text class="option-label">C</text>
+          <text class="option-text">{{item.opt_c}}</text>
+        </view>
+        <view class="option {{optClassD}}" bindtap="selectOption" data-option="D" wx:if="{{item.opt_d}}">
+          <text class="option-label">D</text>
+          <text class="option-text">{{item.opt_d}}</text>
+        </view>
+      </view>
+
+      <!-- 反馈区 -->
+      <view class="feedback" wx:if="{{answered}}">
+        <text class="result-badge {{isCorrect ? 'correct' : 'wrong'}}">{{isCorrect ? '回答正确' : '回答错误'}}</text>
+        <text class="correct-answer" wx:if="{{!isCorrect}}">正确答案：{{item.answer}}</text>
+        <view class="explain" wx:if="{{item.explain}}">
+          <text>{{item.explain}}</text>
+        </view>
+        <view class="tip" wx:if="{{item.tip}}">
+          <text class="tip-label">💡 技巧：</text>
+          <text>{{item.tip}}</text>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="actions">
+        <view class="action-btn primary" wx:if="{{answered && !isComplete}}" bindtap="nextQuestion">
+          {{currentIndex < questions.length - 1 ? '下一题' : '查看结果'}}
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 结果页 -->
+  <view class="result-area" wx:if="{{submitted}}">
+    <view class="card result-card">
+      <text class="result-icon">{{passed ? '🎉' : '😅'}}</text>
+      <text class="result-title">{{passed ? '恭喜通过！' : '继续加油！'}}</text>
+      <text class="score">{{correctCount}}<text class="score-unit"> / {{questions.length}}</text></text>
+      <text class="correct-rate">正确率 {{correctRate}}%</text>
+      <view class="stat-row">
+        <text>✅ 正确 {{correctCount}}</text>
+        <text>❌ 错误 {{wrongCount}}</text>
+      </view>
+    </view>
+
+    <!-- 错题列表 -->
+    <view class="wrong-list" wx:if="{{wrongList.length > 0}}">
+      <text class="section-title">错题回顾</text>
+      <view class="wrong-item" wx:for="{{wrongList}}" wx:key="sort">
+        <text class="wrong-q">{{item.title}}</text>
+        <text class="correct-answer">正确答案：{{item.answer}}</text>
+      </view>
+    </view>
+
+    <view class="actions">
+      <view class="action-btn secondary" bindtap="goBack">返回套题列表</view>
+      <view class="action-btn primary" bindtap="restart">重新答题</view>
+    </view>
+  </view>
+</view>

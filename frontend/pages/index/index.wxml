@@ -45,6 +45,11 @@
         <text class="mode-name">模拟考试</text>
         <text class="mode-desc">限时答题，交卷后出分</text>
       </view>
+      <view class="mode-card" bindtap="goExamSet" wx:if="{{selectedSubject === 1}}">
+        <text class="mode-icon">📚</text>
+        <text class="mode-name">套题练习</text>
+        <text class="mode-desc">按套题顺序作答，巩固知识点</text>
+      </view>
     </view>
   </view>
 

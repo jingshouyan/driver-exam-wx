@@ -171,10 +171,22 @@ function getQuestions(subject, page = 1, size = 100) {
   return request('GET', `/questions?subject=${subject}&page=${page}&size=${size}`)
 }
 
+/** 获取套题列表 */
+function getExamSets(subject) {
+  return request('GET', `/exam-sets?subject=${subject}`)
+}
+
+/** 获取套题题目 */
+function getExamSetQuestions(setId) {
+  return request('GET', `/exam-sets/${setId}/questions`)
+}
+
 module.exports = {
   login,
   getQuestions,
   getQuestionsVersion,
   getAllQuestions,
   getPicByURL,
+  getExamSets,
+  getExamSetQuestions,
 }

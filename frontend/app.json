@@ -3,7 +3,9 @@
     "pages/index/index",
     "pages/practice/practice",
     "pages/exam/exam",
-    "pages/wrong/wrong"
+    "pages/wrong/wrong",
+    "pages/examset/examset",
+    "pages/examset/quiz"
   ],
   "window": {
     "navigationBarBackgroundColor": "#07c160",

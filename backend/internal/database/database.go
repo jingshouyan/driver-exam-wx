@@ -66,6 +66,8 @@ func Init(cfg *config.Config) (*gorm.DB, error) {
 		&model.Question{},
 		&model.Image{},
 		&model.SyncRecord{},
+		&model.ExamSet{},
+		&model.ExamSetQuestion{},
 	); err != nil {
 		return nil, fmt.Errorf("auto migrate: %w", err)
 	}

@@ -11,6 +11,7 @@ func Setup(
 	authHandler *handler.AuthHandler,
 	questionHandler *handler.QuestionHandler,
 	imageHandler *handler.ImageHandler,
+	examSetHandler *handler.ExamSetHandler,
 	authMiddleware *middleware.AuthMiddleware,
 ) *gin.Engine {
 	r := gin.Default()
@@ -34,6 +35,10 @@ func Setup(
 		api.GET("/questions/version", questionHandler.GetVersion)
 		api.GET("/images/by-url", imageHandler.GetByURL)
 api.GET("/images/:md5", imageHandler.GetByMD5)
+
+		// 套题（游客可访问）
+		api.GET("/exam-sets", examSetHandler.ListExamSets)
+		api.GET("/exam-sets/:id/questions", examSetHandler.GetQuestions)
 
 		// 需要登录的操作
 		api.Use(authMiddleware.Handle())

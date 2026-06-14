@@ -15,6 +15,7 @@ import (
 	"driver-exam-wx/internal/handler"
 	"driver-exam-wx/internal/middleware"
 	"driver-exam-wx/internal/router"
+	"driver-exam-wx/internal/seed"
 	"driver-exam-wx/internal/service"
 
 	"github.com/robfig/cron/v3"
@@ -49,14 +50,24 @@ func main() {
 		os.Exit(1)
 	}
 
+	// 导入套题数据
+	{
+		dataDir := filepath.Dir(*configPath) + "/data"
+		if err := seed.ImportExamSets(db, dataDir); err != nil {
+			slog.Error("导入套题失败", "error", err)
+		}
+	}
+
 	// Service
 	authSvc := service.NewAuthService(&cfg.WeChat, db)
 	questionSvc := service.NewQuestionService(db)
 	syncSvc := service.NewSyncService(db, &cfg.JisuAPI)
+	examSetSvc := service.NewExamSetService(db)
 
 	// Handler
 	authHandler := handler.NewAuthHandler(authSvc)
 	questionHandler := handler.NewQuestionHandler(questionSvc)
+	examSetHandler := handler.NewExamSetHandler(examSetSvc)
 	authMiddleware := middleware.NewAuthMiddleware(authSvc)
 
 	// 启动同步（检查间隔）
@@ -95,7 +106,7 @@ func main() {
 
 	// Router
 	imageHandler := handler.NewImageHandler(service.NewImageService(db))
-	r := router.Setup(authHandler, questionHandler, imageHandler, authMiddleware)
+	r := router.Setup(authHandler, questionHandler, imageHandler, examSetHandler, authMiddleware)
 
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	slog.Info("服务启动", "addr", addr)

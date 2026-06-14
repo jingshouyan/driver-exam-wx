@@ -1,0 +1,20 @@
+<view class="page">
+  <view class="header">
+    <text class="title">科目{{subject}} · 套题练习</text>
+    <text class="subtitle">每套 100 题，按顺序作答</text>
+  </view>
+
+  <view class="loading" wx:if="{{!sets.length}}">
+    <text>加载中...</text>
+  </view>
+
+  <view class="set-list" wx:for="{{sets}}" wx:key="id">
+    <view class="set-card" bindtap="goQuiz" data-id="{{item.id}}">
+      <view class="set-info">
+        <text class="set-title">{{item.title}}</text>
+        <text class="set-count">{{item.question_count}} 题</text>
+      </view>
+      <text class="set-arrow">›</text>
+    </view>
+  </view>
+</view>

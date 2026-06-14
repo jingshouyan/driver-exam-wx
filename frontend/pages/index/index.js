@@ -107,6 +107,13 @@ Page({
     })
   },
 
+  /** 前往套题练习 */
+  goExamSet() {
+    wx.navigateTo({
+      url: `/pages/examset/examset?subject=${this.data.selectedSubject}`,
+    })
+  },
+
   /** 前往错题本 */
   goWrongBook() {
     wx.navigateTo({ url: '/pages/wrong/wrong' })
