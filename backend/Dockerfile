@@ -29,6 +29,9 @@ COPY --from=builder /build/server /app/server
 # 复制示例配置（部署时通过挂载覆盖）
 COPY --from=builder /build/config.example.yaml /app/config.yaml
 
+# 复制套题数据文件（用于启动时导入）
+COPY --from=builder /build/data /app/data
+
 EXPOSE 8080
 
 CMD ["/app/server", "-config", "/app/config.yaml"]
