@@ -26,6 +26,23 @@
   margin-left: auto;
 }
 
+.top-stats {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  margin-left: auto;
+}
+
+.stat-correct {
+  color: #07c160;
+  font-weight: 600;
+}
+
+.stat-wrong {
+  color: #ee0a24;
+  font-weight: 600;
+}
+
 .exam-badge {
   font-size: 12px;
   color: #07c160;
@@ -58,8 +75,11 @@
 
 .q-pic {
   width: 100%;
+  max-height: 200px;
+  object-fit: contain;
   margin-top: 12px;
   border-radius: 8px;
+  background-color: #f8f8f8;
 }
 
 .options {
