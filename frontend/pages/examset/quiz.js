@@ -115,6 +115,11 @@ Page({
       answers,
       ...cls,
     })
+
+    // 答对后延迟自动下一题
+    if (isCorrect) {
+      setTimeout(() => this.nextQuestion(), 600)
+    }
   },
 
   _calcOptClass(option, isCorrect, answer) {
