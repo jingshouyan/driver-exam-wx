@@ -149,29 +149,51 @@ Page({
     const total = this.data.questions.length
     const answers = this.data.answers || []
     let correctCount = 0
-    const wrongList = []
+    const wrongIds = []
+    const wrongQuestions = []
     for (let i = 0; i < total; i++) {
       const ans = answers[i] || ''
       if (ans.toUpperCase() === this.data.questions[i].answer.toUpperCase()) {
         correctCount++
       } else if (ans) {
-        wrongList.push({
-          sort: i + 1,
-          title: this.data.questions[i].title,
-          answer: this.data.questions[i].answer,
-        })
+        wrongIds.push(i)
+        wrongQuestions.push(this.data.questions[i])
       }
     }
     const wrongCount = total - correctCount
     const correctRate = Math.round((correctCount / total) * 100)
+    const allCorrect = wrongCount === 0
 
     this.setData({
       submitted: true,
       correctCount,
       correctRate,
       wrongCount,
-      wrongList,
+      wrongList: wrongQuestions,
       passed: correctRate >= 90,
+    })
+  },
+
+  /** 重做错题 */
+  redoWrong() {
+    if (!this.data.wrongList || this.data.wrongList.length === 0) return
+    this.setData({
+      questions: this.data.wrongList,
+      currentIndex: 0,
+      answered: false,
+      selectedOption: '',
+      isCorrect: false,
+      submitted: false,
+      correctCount: 0,
+      correctRate: 0,
+      wrongCount: 0,
+      wrongList: [],
+      passed: false,
+      answers: [],
+      optClassA: '',
+      optClassB: '',
+      optClassC: '',
+      optClassD: '',
     })
   },
 

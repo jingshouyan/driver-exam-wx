@@ -85,9 +85,16 @@
       </view>
     </view>
 
+    <!-- 全部答对 -->
+    <view class="card result-card" wx:if="{{wrongCount === 0}}">
+      <text class="result-icon">🎉</text>
+      <text class="result-title">全部答对！</text>
+    </view>
+
     <view class="actions">
       <view class="action-btn secondary" bindtap="goBack">返回套题列表</view>
-      <view class="action-btn primary" bindtap="restart">重新答题</view>
+      <view class="action-btn primary" wx:if="{{wrongCount > 0}}" bindtap="redoWrong">重做错题（{{wrongCount}} 题）</view>
+      <view class="action-btn primary" wx:if="{{wrongCount === 0}}" bindtap="restart">重新答题</view>
     </view>
   </view>
 </view>
