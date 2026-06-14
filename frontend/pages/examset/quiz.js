@@ -108,18 +108,39 @@ Page({
     const answers = this.data.answers || []
     answers[this.data.currentIndex] = option
 
+    // 实时更新正确/错误计数
+    const stats = this._calcStats(answers)
+
     this.setData({
       answered: true,
       selectedOption: option,
       isCorrect,
       answers,
       ...cls,
+      correctCount: stats.correctCount,
+      wrongCount: stats.wrongCount,
     })
 
     // 答对后延迟自动下一题
     if (isCorrect) {
       setTimeout(() => this.nextQuestion(), 600)
     }
+  },
+
+  /** 统计正确/错误数 */
+  _calcStats(answers) {
+    let correctCount = 0
+    let wrongCount = 0
+    for (let i = 0; i < this.data.questions.length; i++) {
+      const ans = answers[i] || ''
+      if (!ans) continue
+      if (ans.toUpperCase() === this.data.questions[i].answer.toUpperCase()) {
+        correctCount++
+      } else {
+        wrongCount++
+      }
+    }
+    return { correctCount, wrongCount }
   },
 
   _calcOptClass(option, isCorrect, answer) {
@@ -148,28 +169,22 @@ Page({
   finishQuiz() {
     const total = this.data.questions.length
     const answers = this.data.answers || []
-    let correctCount = 0
-    const wrongIds = []
-    const wrongQuestions = []
+    const stats = this._calcStats(answers)
+    const wrongList = []
     for (let i = 0; i < total; i++) {
       const ans = answers[i] || ''
-      if (ans.toUpperCase() === this.data.questions[i].answer.toUpperCase()) {
-        correctCount++
-      } else if (ans) {
-        wrongIds.push(i)
-        wrongQuestions.push(this.data.questions[i])
+      if (ans && ans.toUpperCase() !== this.data.questions[i].answer.toUpperCase()) {
+        wrongList.push(this.data.questions[i])
       }
     }
-    const wrongCount = total - correctCount
-    const correctRate = Math.round((correctCount / total) * 100)
-    const allCorrect = wrongCount === 0
+    const correctRate = Math.round((stats.correctCount / total) * 100)
 
     this.setData({
       submitted: true,
-      correctCount,
+      correctCount: stats.correctCount,
       correctRate,
-      wrongCount,
-      wrongList: wrongQuestions,
+      wrongCount: stats.wrongCount,
+      wrongList,
       passed: correctRate >= 90,
     })
   },
