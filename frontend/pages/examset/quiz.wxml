@@ -2,7 +2,10 @@
   <!-- 顶部信息栏 -->
   <view class="top-bar">
     <view class="progress">{{currentIndex + 1}} / {{questions.length}}</view>
-    <text class="timer">{{timeStr}}</text>
+    <view class="top-stats">
+      <text class="stat-correct">✅ {{correctCount}}</text>
+      <text class="stat-wrong">❌ {{wrongCount}}</text>
+    </view>
     <text class="exam-badge">套题</text>
   </view>
 
